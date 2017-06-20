@@ -1,0 +1,261 @@
+﻿@using System.Configuration
+@{
+    ViewBag.Title = "Manage Ad";
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+    var successResult = ViewData["SuccessResult"];
+    var errorResult = ViewData["ErrorResult"];
+    if (successResult != null)
+    {
+        successResult = successResult.ToString();
+    }
+    if (errorResult != null)
+    {
+        errorResult = errorResult.ToString();
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-8">
+
+                <div class="editAdPanel"></div>
+                <div class="allAds">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li><a href="@Url.Action("Index", "Home")"> Home</a></li>
+                            <li class="active"><b>Ad</b></li>
+                            <li class="active"><b>Manage</b></li>
+                        </ol>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span class="panelHeaderFont">My Ads</span>
+                            @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+                        </div>
+                        <div class="panel-body myAds">
+                            <img class="hidden loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*if (Request.IsAuthenticated)*@
+                        @{
+                            Html.RenderPartial("Partial/Ad/AdsDashboardPartial");
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+            var deleteAdId = 0;
+
+            @if (successResult != null)
+            {
+               <text> alertify.success("@successResult");</text>
+            }
+            @if (errorResult != null)
+              {
+                  <text> alertify.error("@errorResult");</text>
+              }
+      
+
+
+            showMyAds();
+
+            $("#MyAds")
+               .on("click",
+                   function () {
+                       showMyAds();
+                       $(".allAds").removeClass("hidden");
+                       $(".editAdPanel").addClass("hidden");
+                   });
+
+            function showMyAds() {
+                $.ajax({
+                    url: '@Url.Action("GetMyAds", "Ad")',
+                    type: 'GET',
+                    cache: false,
+                    async: true,
+                    beforeSend: function () {
+                        $('.loading-image').removeClass('hidden');
+                    },
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('.myAds').html(result);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        var errorArray = errorThrown.split('<br>');
+                        //$("#ManageProfileSuccess").html("Failed!");
+
+                        alertify.error("Error Loading Ads!");
+                    },
+                    complete: function () {
+
+                    }
+                });
+            }
+
+            $(document).on('click', '.cancelEditAd',
+                  function (e) {
+                      e.preventDefault();
+                      $("#MyAds").click();
+                  });
+
+
+
+            $(document).on('click', '.deleteAd',
+                   function (e) {
+                       e.preventDefault();
+                      
+                       $(this).closest("td").find("div.adOptions").addClass("hidden");
+                       $(this).closest("td").find("div.confirmDelete").fadeIn();
+
+                   });
+
+            $(document)
+                .on('click',
+                    '.cancelDelete',
+                    function (e) {
+                        e.preventDefault();
+                        $(this).closest("td").find("div.confirmDelete").hide();
+                        $(this).closest("td").find("div.adOptions").removeClass("hidden");
+                       
+                    }
+                );
+
+            $(document)
+                .on('click',
+                    '.confirmdeleteButton',
+                    function(e) {
+                        e.preventDefault();
+                       //var closesttbody = $(this).closest("tbody");
+                       var adId = $(this).data().bind;
+                        $.ajax({
+                            url: '@Url.Action("DeleteAd", "Ad")',
+                            type: 'DELETE',
+                            cache: false,
+                            async: true,
+                            data: { id: adId },
+                            success: function () {
+                                //closesttbody.remove();
+                                showMyAds();
+                                alertify.success("Ad has been deleted!");
+
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                var errorArray = errorThrown.split('<br>');
+                                //$("#ManageProfileSuccess").html("Failed!");
+
+                                alertify.error("Cannot delete the ad!");
+                            },
+                            complete: function () {
+
+                            }
+
+                        });
+                    }
+                );
+
+
+
+            $(document).on('click', '.editAd',
+                  function (e) {
+                      e.preventDefault();
+                      var adId = $(this).data().bind;
+                      $.ajax({
+                          url: '@Url.Action("GetEditAdPartial", "Ad")',
+                          type: 'GET',
+                          async: true,
+                          cache: false,
+                          data: { id: adId },
+                          success: function (response) {
+                              $(".allAds").addClass("hidden");
+                              $(".editAdPanel").removeClass("hidden");
+                              $(".editAdPanel").html(response);
+                          },
+                          error: function (xhr, textStatus, errorThrown) {
+
+                          },
+                          complete: function () {
+
+                          }
+
+                      });
+                  });
+
+            $(document).on('click', '.renewAd',
+              function (e) {
+                  e.preventDefault();
+                  var adId = $(this).data().bind;
+                  $.ajax({
+                      url: '@Url.Action("RenewAd", "Ad")',
+                      type: 'PATCH',
+                      async: true,
+                      cache: false,
+                      data: { id: adId },
+                      success: function (response) {
+                          showMyAds();
+                          alertify.success("Ad has been renewed for 30 days!");
+                      },
+                      error: function (xhr, textStatus, errorThrown) {
+                          alertify.error(errorThrown);
+                      },
+                      complete: function () {
+
+                      }
+
+                  });
+              });
+
+            $(document).on("click", ".unpauseAd",
+                         function (e) {
+                             e.preventDefault();
+                             var id = $(this).data('bind');
+                             $.ajax({
+                                 url: '@Url.Action("UnpauseAd", "ad")',
+                                 type: "PATCH",
+                                 data: { 'id': id },
+                                 cache: false,
+                                 async: true,
+                                 success: function (data) {
+                                     showMyAds();
+                                     alertify.success("Ad Unpaused!");
+                                 },
+                                 error: function (xhr, textStatus, errorThrown) {
+                                     alertify.error(errorThrown);
+                                 }
+
+                             });
+                         });
+
+            $(document).on("click", ".pauseAd",
+                  function (e) {
+                      e.preventDefault();
+                      var id = $(this).data('bind');
+                      $.ajax({
+                          url: '@Url.Action("PauseAd", "ad")',
+                          type: "PATCH",
+                          data: { 'id': id },
+                          cache: false,
+                          async: true,
+                          success: function (data) {
+                              showMyAds();
+                              alertify.success("Ad Paused!");
+                          },
+                          error: function (xhr, textStatus, errorThrown) {
+                              alertify.error(errorThrown);
+                          }
+
+                      });
+                  });
+        });
+</script>

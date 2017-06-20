@@ -1,0 +1,4 @@
+C:\oitproject\Hamroktm\hamroktm\contracts\bin\hamroktmMainClientAzureTest\contracts.dll
+C:\oitproject\Hamroktm\hamroktm\contracts\bin\hamroktmMainClientAzureTest\contracts.pdb
+C:\oitproject\Hamroktm\hamroktm\contracts\obj\hamroktmMainClientAzureTest\contracts.dll
+C:\oitproject\Hamroktm\hamroktm\contracts\obj\hamroktmMainClientAzureTest\contracts.pdb

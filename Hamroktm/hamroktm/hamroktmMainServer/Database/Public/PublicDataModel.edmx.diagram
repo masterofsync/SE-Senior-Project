@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0245df017638409aa3adc63803e9300b" Name="Diagram1">
+        <EntityTypeShape EntityType="hamroktmtModel.Ad" Width="1.5" PointX="6" PointY="15.25" />
+        <EntityTypeShape EntityType="hamroktmtModel.Ad_Images" Width="1.5" PointX="8.25" PointY="15.375" />
+        <EntityTypeShape EntityType="hamroktmtModel.AdComment" Width="1.5" PointX="8.25" PointY="5.5" />
+        <EntityTypeShape EntityType="hamroktmtModel.AspNetRole" Width="1.5" PointX="0.75" PointY="5.875" />
+        <EntityTypeShape EntityType="hamroktmtModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="9" />
+        <EntityTypeShape EntityType="hamroktmtModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="11.625" />
+        <EntityTypeShape EntityType="hamroktmtModel.AspNetUser" Width="1.5" PointX="3" PointY="3.875" />
+        <EntityTypeShape EntityType="hamroktmtModel.Category" Width="1.5" PointX="7.75" PointY="9.125" />
+        <EntityTypeShape EntityType="hamroktmtModel.Category_SubCategory" Width="1.5" PointX="10" PointY="0.875" />
+        <EntityTypeShape EntityType="hamroktmtModel.SearchTag" Width="1.5" PointX="8.25" PointY="18.125" />
+        <EntityTypeShape EntityType="hamroktmtModel.SubCategory" Width="1.5" PointX="7.75" PointY="1.125" />
+        <EntityTypeShape EntityType="hamroktmtModel.Users_Follow" Width="1.5" PointX="5.25" PointY="2.875" />
+        <EntityTypeShape EntityType="hamroktmtModel.AdPoster" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="hamroktmtModel.AdId" />
+        <AssociationConnector Association="hamroktmtModel.FK_Ad_Tag_Ad" />
+        <AssociationConnector Association="hamroktmtModel.FK_AdComments_Ad" />
+        <AssociationConnector Association="hamroktmtModel.FK_AdComments_User" />
+        <AssociationConnector Association="hamroktmtModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="hamroktmtModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="hamroktmtModel.FK_FollowerUser" />
+        <AssociationConnector Association="hamroktmtModel.FK_FollowingUser" />
+        <AssociationConnector Association="hamroktmtModel.FK_Category" />
+        <AssociationConnector Association="hamroktmtModel.FK_SubCategory" />
+        <AssociationConnector Association="hamroktmtModel.AspNetUserRoles" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

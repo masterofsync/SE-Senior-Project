@@ -1,0 +1,164 @@
+﻿@using System.Configuration
+@{
+    ViewBag.Title = "Index";
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-mid-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li><a href="@Url.Action("Index", "Home")"> Home</a></li>
+                            <li class="active"><b>Admin</b></li>
+                        </ol>
+                    </div>
+                    <div class="adminSpace">
+                        <img class="loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @{
+                        Html.RenderPartial("Partial/Category/CategoryDashboard");
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+            showAllCategoriesPartial();
+            $("#AllCategories")
+                .on("click",
+                    function () {
+                        showAllCategoriesPartial();
+                    });
+
+            $("#PostCategory")
+               .on("click",
+                   function () {
+                       showPostCategoryPartial();
+                   });
+
+            function showPostCategoryPartial() {
+                $.ajax({
+                    url: "@Url.Action("GetPostCategory", "Category")",
+                    type: "GET",
+                    async: true,
+                    success: function (response) {
+                        $(".adminSpace").html(response);
+                    }
+                });
+            }
+
+            function showAllCategoriesPartial() {
+                $.ajax({
+                    url: "@Url.Action("GetCategories", "Category")",
+                    type: "GET",
+                    async: true,
+                    success: function (response) {
+                        $(".adminSpace").html(response);
+                    }
+                });
+            }
+
+            $(document).on('click', '.deleteCategory',
+                   function (e) {
+                       e.preventDefault();
+                       $(this).closest("td").find("div.allcategoriesOptions").addClass("hidden");
+                       $(this).closest("td").find("div.confirmDelete").fadeIn();
+                   });
+
+            $(document)
+                .on('click',
+                    '.cancelDelete',
+                    function(e) {
+                        e.preventDefault();
+                        $(this).closest("td").find("div.confirmDelete").hide();
+                        $(this).closest("td").find("div.allcategoriesOptions").removeClass("hidden");
+                    });
+
+
+            $(document)
+                .on('click',
+                    '.confirmdeleteButton',function(e) {
+                        e.preventDefault();
+                        var closesttbody = $(this).closest("tbody");
+                        var categoryId = $(this).data().bind;
+                        $.ajax({
+                            url: '@Url.Action("DeleteCategory", "Category")',
+                            type: 'DELETE',
+                            async: true,
+                            data: { id: categoryId },
+                            success: function () {
+                                //closesttbody.remove();
+                                showAllCategoriesPartial();
+                                alertify.success("Category has been deleted!");
+
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                alertify.error("Cannot delete the Category!");
+                            },
+                            complete: function () {
+
+                            }
+                        });
+                    }
+                );
+
+            $(document).on('click', '.buttonCancel',
+                               function (e) {
+                                   e.preventDefault();
+                                   showAllCategoriesPartial();
+                               });
+
+            $(document).on('click', '.editCategory',
+                 function (e) {
+                     e.preventDefault();
+                     var categoryId = $(this).data().bind;
+                     $.ajax({
+                         url: '@Url.Action("GetCategoryById", "Category")',
+                         type: 'PUT',
+                         async: true,
+                         data: { id: categoryId },
+                         success: function (response) {
+                             $(".adminSpace").html(response);
+                         },
+                         error: function (xhr, textStatus, errorThrown) {
+                             alertify.error("Cannot Modify the Category!");
+                         },
+                         complete: function () {
+
+                         }
+
+                     });
+                 });
+
+            $(document).on('click', '#SearchAdToEdit',
+          function (e) {
+              e.preventDefault();
+              $.ajax({
+                  url: '@Url.Action("GetSearchAdToEditPartial", "Admin")',
+                  type: 'GET',
+                  success: function (response) {
+                      $(".adminSpace").html(response);
+                  },
+                  error: function (xhr, textStatus, errorThrown) {
+                      alertify.error("Could not load! Please refresh the page and try again!");
+                  },
+                  complete: function () {
+
+                  }
+
+              });
+          });
+
+
+        });
+</script>

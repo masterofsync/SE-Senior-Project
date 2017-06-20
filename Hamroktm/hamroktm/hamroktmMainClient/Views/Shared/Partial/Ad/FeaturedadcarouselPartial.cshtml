@@ -1,0 +1,111 @@
+﻿@using System.Configuration
+@model IEnumerable<contracts.Models.AdContract>
+@{
+
+    var productImagePath = ConfigurationManager.AppSettings["ProductImagePath"];
+}
+
+<style>
+    .carouselContainer {
+        overflow: visible;
+    }
+
+        .carouselContainer img {
+         
+        }
+
+          .minwidthHeightf {
+        min-height: 160px;
+        min-width: 160px;
+            display: flex;
+    align-items: center;
+    justify-content: center;
+
+    }
+
+    .slick-next, .slick-prev {
+        z-index: 999;
+        position: absolute;
+        width: 55px;
+    }
+
+    .slick-slide {
+        margin: 0 27px;
+    }
+    /* the parent */
+    .slick-list {
+        margin: 0 -27px;
+    }
+
+    .thumbnail {
+        margin-bottom: 0px;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+        font-family: 'slick';
+        font-size: 40px;
+        line-height: 1;
+        opacity: .6;
+        color: #a6e98a !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+</style>
+
+<div class="autoplay carouselContainer">
+    @foreach (var featuredad in Model)
+    {
+        <a href="@Url.Action("index","Ad",new{featuredad.AdId})" @*target="_blank"*@>
+            <div class="wrapper">
+                <div class="ribbon-wrapper-green">
+                    <div class="ribbon-green">@String.Format("{0:C}", featuredad.Price)</div>
+                </div>
+                <div class="thumbnail minwidthHeightf">
+                    <img class=" img-responsive" src="@Url.Content(productImagePath + "Small_" + featuredad.Images[0])" alt="@featuredad.Images[0]" />
+                </div>
+            </div>
+        </a>
+    }
+    @if (Model.Count() < 6)
+    {
+        <div class="wrapper">
+            <div class="ribbon-wrapper-green">
+                <div class="ribbon-green">$233</div>
+            </div>
+            <img class="imgadsmall img-responsive thumbnail" src="@Url.Content(productImagePath + "Small_20161221050217van.jpg")" alt="Small_20161221050217van.jpg" />
+        </div>
+        <div class="wrapper">
+            <div class="ribbon-wrapper-green">
+                <div class="ribbon-green">$323</div>
+            </div>
+            <img class="imgadsmall img-responsive thumbnail" src="@Url.Content(productImagePath + "Small_20161221050217van.jpg")" alt="Small_20161221050217van.jpg" />
+        </div>
+        <div class="wrapper">
+            <div class="ribbon-wrapper-green">
+                <div class="ribbon-green">$323</div>
+            </div>
+            <img class="imgadsmall img-responsive thumbnail" src="@Url.Content(productImagePath + "Small_20161221050217van.jpg")" alt="Small_20161221050217van.jpg" />
+        </div>
+    }
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+            $.getScript('/Scripts/slick.js', function () {
+                //Do Stuff with the loaded plugin
+                $('.autoplay')
+                    .slick({
+                        slidesToShow: 5,
+                        slidesToScroll: 1,
+                        autoplay: true,
+                        autoplaySpeed: 4000,
+                        arrows: true,
+                        centerMode: true,
+                        variableWidth: true
+                    });
+
+            });
+        });
+</script>

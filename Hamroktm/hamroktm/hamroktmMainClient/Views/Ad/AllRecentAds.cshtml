@@ -1,0 +1,131 @@
+﻿@using System.Configuration
+@model IEnumerable<contracts.Models.AdContract>
+
+@{
+    ViewBag.Title = "Recent Ads";
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+}
+
+<style>
+    .jumbotron {
+        background-color: white;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-mid-12">
+            <ol class="breadcrumb">
+                <li><a href="@Url.Action("Index","Home")"><b>Home</b></a></li>
+                <li class="active"><b>Ad</b></li>
+                <li class="active"><b>@ViewBag.Title</b></li>
+            </ol>
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <div id="SearchResults">
+                        <div class="ads">
+                            <img class="text-center loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Pagination" class="text-center">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function() {
+            if(@Model.Count()>0){
+                var totalAds = @Model.Count();
+                var modelData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+                var totalPage = totalAds / 5 + ((totalAds % 5) > 0 ? 1 : 0);
+                var currentPage = 1;
+                var adPerPage = 5;
+                var test = totalPage;
+                updateResult(currentPage);
+            }
+
+
+            function updateResult(currentPg) {
+                //calculate result for current page ... skip to the page.. take adPerPage after that
+                var currentContent = modelData.slice(adPerPage * (currentPg - 1), adPerPage * (currentPg - 1) + adPerPage);
+                var testContent = JSON.stringify(currentContent);
+
+                //get current page data
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'html',
+                    url:"@Url.Action("GetAdPageResult", "Ad")",
+                    type:'POST',
+                    data : testContent,
+                    success: function(data) {
+                        //update current page data in searchresults
+                        $('#SearchResults').html(data);
+                    },
+                    error: function(err) {
+                        $('#SearchResults').html("Error!");
+                    }
+
+                });
+
+                //update the pagination buttons.
+                updatePagination(currentPg);
+            }
+
+            function updatePagination(currentPg) {
+
+                var previous1 = currentPg - 1;
+                var previous2 = currentPg - 2;
+                var next1 = +currentPg + 1;
+                var next2 = +currentPg + 2;
+                var left = 1;
+                var right = totalPage;
+                var li1 = [];
+
+                if (currentPg > 0) {
+
+                    if ((previous2) > 0) {
+                        left = currentPg - 2;
+                    } else if (previous1 > 0) {
+                        left = currentPg - 1;
+                    }
+
+
+                    if ((next2) <= totalPage) {
+                        right = +currentPg + 2;
+
+                    } else if (next1 <= totalPage) {
+                        right = +currentPg + 1;
+                    }
+
+                }
+
+                if (previous1 > 0) {
+                    li1.push("<li class='paginButton' data-option='" + previous1 + "'><a href='#'>Previous</a></li>");
+                }
+                for (var i = left; i <= right; i++) {
+                    if (currentPg == i) {
+                        li1.push("<li class='active' data-option='" + i + "'><a href='#'>" + i + "</a></li>");
+                    } else {
+                        li1.push("<li class='paginButton' data-option='" + i + "'><a href='#'>" + i + "</a></li>");
+                    }
+                }
+                if (next1 <= totalPage) {
+                    li1.push("<li class='paginButton' data-option='" + next1 + "'><a href='#'>Next</a></li>");
+                }
+                $('#Pagination').html("<ul class='pagination'>"+li1.join('')+"</ul>");
+            }
+
+            $("#Pagination")
+                .on("click",".paginButton",
+                    function(e) {
+                        e.preventDefault();
+                        updateResult(this.dataset.option);
+                        updatePagination(this.dataset.option);
+                    });
+        });
+</script>

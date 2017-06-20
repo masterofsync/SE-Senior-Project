@@ -1,0 +1,12 @@
+﻿@model string
+
+@if (@Model.Any())
+{
+    <div class="alert alert-success">
+        <a class="close" data-dismiss="alert">×</a>
+
+
+        @Model
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+    </div>
+}

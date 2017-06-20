@@ -1,0 +1,4 @@
+C:\oitproject\Hamroktm\hamroktm\contracts\bin\Debug\contracts.dll
+C:\oitproject\Hamroktm\hamroktm\contracts\bin\Debug\contracts.pdb
+C:\oitproject\Hamroktm\hamroktm\contracts\obj\Debug\contracts.dll
+C:\oitproject\Hamroktm\hamroktm\contracts\obj\Debug\contracts.pdb

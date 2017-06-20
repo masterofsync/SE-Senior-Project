@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Post Ad";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="col-md-8">
+                <div>
+                    <ol class="breadcrumb">
+                        <li><a href="@Url.Action("Index","Home")"> Home</a></li>
+                        <li class="active"><b>Ad</b></li>
+                        <li class="active"><b>Post Ad</b></li>
+                    </ol>
+                </div>
+
+                @{
+                    Html.RenderPartial("Partial/Ad/PostAdPartial");
+                }
+
+
+            </div>
+
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*if (Request.IsAuthenticated)*@
+                         @{
+                            Html.RenderPartial("Partial/Ad/PostAdDashboardPartial");
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        
+                        @*@if (Request.IsAuthenticated)
+                            {
+                                Html.RenderPartial("Partial/Ad/AdsDashboardPartial");
+                            }*@
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

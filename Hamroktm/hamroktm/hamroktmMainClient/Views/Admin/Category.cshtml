@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "Category";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-mid-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li><a href="@Url.Action("Index","Home")"> Home</a></li>
+                            <li class="active"><b>Admin</b></li>
+                            <li class="active"><b>Category</b></li>
+                        </ol>
+                    </div>
+                    <div class="categoryspace">
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @{
+                        Html.RenderPartial("Partial/Category/CategoryDashboard");
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document)
+        .ready(function () {
+            showAllCategoriesPartial();
+            $("#AllCategories")
+                .on("click",
+                    function () {
+                        showAllCategoriesPartial();
+                    });
+
+            $("#PostCategory")
+               .on("click",
+                   function () {
+                       showPostCategoryPartial();
+                   });
+
+            function showPostCategoryPartial() {
+                $.ajax({
+                    url: "@Url.Action("GetPostCategory", "Category")",
+                    type: "GET",
+                    async: true,
+                    success: function (response) {
+                        $(".categoryspace").html(response);
+                    }
+                });
+            }
+
+            function showAllCategoriesPartial() {
+                $.ajax({
+                    url: "@Url.Action("GetCategories", "Category")",
+                    type: "GET",
+                    async: true,
+                    success: function (response) {
+                        $(".categoryspace").html(response);
+                    }
+                });
+            }
+
+            $(document).on('click', '.deleteCategory',
+                   function (e) {
+                       e.preventDefault();
+                       var closesttbody = $(this).closest("tbody");
+                       var categoryId = $(this).data().bind;
+                       $.ajax({
+                           url: '@Url.Action("DeleteCategory", "Category")',
+                           type: 'DELETE',
+                           async: true,
+                           data: { id: categoryId },
+                           success: function () {
+                               //closesttbody.remove();
+                               showAllCategoriesPartial();
+                               alertify.success("Category has been deleted!");
+
+                           },
+                           error: function (xhr, textStatus, errorThrown) {
+                               alertify.error("Cannot delete the Category!");
+                           },
+                           complete: function () {
+
+                           }
+
+                       });
+                   });
+
+            $(document).on('click', '.buttonCancel',
+                               function (e) {
+                                   e.preventDefault();
+                                   showAllCategoriesPartial();
+                               });
+
+            $(document).on('click', '.editCategory',
+                 function (e) {
+                     e.preventDefault();
+                     var categoryId = $(this).data().bind;
+                     $.ajax({
+                         url: '@Url.Action("GetCategoryById", "Category")',
+                         type: 'PUT',
+                         async: true,
+                         data: { id: categoryId },
+                         success: function (response) {
+                             $(".categoryspace").html(response);
+                         },
+                         error: function (xhr, textStatus, errorThrown) {
+                             alertify.error("Cannot Modify the Category!");
+                         },
+                         complete: function () {
+
+                         }
+
+                     });
+                 });
+        });
+</script>

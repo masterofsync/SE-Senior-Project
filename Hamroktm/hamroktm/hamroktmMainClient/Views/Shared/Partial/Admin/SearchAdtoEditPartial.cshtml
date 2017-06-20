@@ -1,0 +1,278 @@
+﻿<style>
+    .confirmDeleteAd {
+        display: none;
+    }
+</style>
+
+<div>
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <label for="adId" class="control-label col-md-2">Search by Ad Id</label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input style="max-width: 100%" id="adId" name="adId" class="form-control" type="text" />
+                    <span class="getSearchResult input-group-btn">
+                        <span class="btn btn-default btn-beside"><span class="glyphicon glyphicon-search"></span></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body AdSearchResult">
+    </div>
+</div>
+
+
+<script>
+    $(document)
+        .ready(function () {
+            $(".AdSearchResult").on('mouseenter', 'button.btn-xs', function () {
+                $('[data-toggle="popover"]').popover({ trigger: "hover" });
+            });
+            $(".getSearchResult")
+                .on("click",
+                    function () {
+                        var id = $("#adId").val();
+                        if ($.isNumeric(id)) {
+                            searchAd(id);
+                        } else {
+                            alertify.error("Please enter a numeric value!");
+                        }
+                    });
+
+
+            function searchAd(id) {
+                $.ajax({
+                    url: '@Url.Action("GetAdById","Admin")',
+                    type: "GET",
+                    data: { 'id': id },
+                    cache: false,
+                    async: true,
+                    success: function (data) {
+                        if (!$.trim(data)) {
+                            alertify.error("Could not find Ad with Id: " + id);
+                        }
+                        else {
+                            $(".AdSearchResult").html(results(data));
+                        }
+                    }
+                });
+            }
+
+            function results(ad) {
+                var firstPart = "<div>  <br/><div class='col-md-1'><div class='row'><b>ID</b></div><div class='row'>" + ad.AdId + "</div></div><div class='col-md-6'><div class='row'><b>Title</b></div><div class='row'><a href='@Url.Action("Index", "Ad")/" + ad.AdId + "' target='_blank'>" + ad.Title + "</a></div></div><div class='col-md-1'><div class='row'><b>Featured</b></div><div class='row text-center'>";
+                var secondPart = "";
+                if (ad.Featured === true) {
+                    secondPart =
+                        "<span style='color:lightgreen' class='color-green glyphicon glyphicon-ok-sign'></span>";
+                } else {
+                    secondPart =
+                       "<span style='color:red' class='color-red glyphicon glyphicon-remove'></span>";
+                }
+
+                var thirdPart = "</div></div><div class='col-md-1'><div class='row'><b>Status</b></div><div class='row'>";
+                var fourthPart = "";
+
+                var fifthPart = " &nbsp;" +
+                    ad.Status +
+                    "</div></div><div class='col-md-3'><div class='row'><b>Options</b></div><div class='row'><div class='confirmDeleteAd'><b>Delete?</b>&nbsp;<button type='button' data-bind='" +
+                    ad.AdId + "'  data-toggle='popover' data-trigger='hover' data-placement='top' data-content='Delete Category' class='confirmdeleteadButton btn btn-success btn-xs'><span class='glyphicon glyphicon-ok'></span></button>&nbsp;<button type='button' data-bind='" +
+                    ad.AdId + "' data-toggle='popover' data-trigger='hover' data-placement='top' data-content='Cancel' class='canceladDelete btn btn-danger btn-xs'><span class='glyphicon glyphicon-remove'></span></button>&nbsp;</div><div class='adminAdOptions'><button type='button' data-bind='" +
+                    ad.AdId +
+                    "' data-toggle='popover' data-trigger='hover' data-placement='top' data-content='Delete Ad' class='deleteGlobalAd btn btn-danger btn-xs'><span class='glyphicon glyphicon-remove'></span></button>&nbsp;"+
+                    //<button type='button' data-bind='" +
+                    //ad.AdId +
+                    //"' data-toggle='popover' data-trigger='hover' data-content='Edit Ad' data-placement='top' class='editGlobalAd btn btn-info btn-xs'><span class='glyphicon glyphicon-edit'></span></button>&nbsp;
+                    "<button type='button' data-bind='" +
+                    ad.AdId +"' data-toggle='popover' data-trigger='hover' data-content='Renew Ad' data-placement='top' class='renewGlobalAd btn btn-default btn-xs'><span class='glyphicon glyphicon-repeat'></span></button>&nbsp;";
+
+                var sixthPart = "";
+                if (ad.Featured === true) {
+                    sixthPart =
+                       " <button type='button' data-bind='" + ad.AdId + "' data-toggle='popover' data-trigger='hover' data-content='Remove Featured' data-placement='top' class='removeAdFromFeatured btn btn-default btn-xs'><span class='glyphicon glyphicon-eye-close'></span></button>&nbsp;";
+
+                } else {
+                    sixthPart = "<button type='button' data-bind='" + ad.AdId + "' data-toggle='popover' data-trigger='hover' data-content='Make Ad Featured' data-placement='top' class='makeAdFeatured btn btn-default btn-xs'><span class='glyphicon glyphicon-eye-open'></span></button>&nbsp;";
+                }
+                var seventhPart = "";
+                if (ad.Status === "Paused") {
+                    seventhPart = "<button type='button' data-bind='" + ad.AdId + "' data-toggle='popover' data-trigger='hover' data-content='Unpause Ad' data-placement='top' class='unpauseGlobalAd btn btn-default btn-xs'><span class='glyphicon glyphicon-play'></span></button></div></div></div></div>";
+                } else {
+                    seventhPart = "<button type='button' data-bind='" + ad.AdId + "' data-toggle='popover' data-trigger='hover' data-content='Pause Ad' data-placement='top' class='pauseGlobalAd btn btn-default btn-xs'><span class='glyphicon glyphicon-pause'></span></button></div></div></div></div>";
+                }
+                return (firstPart + secondPart + thirdPart + fourthPart + fifthPart + sixthPart + seventhPart);
+            }
+
+            $(document)
+            .on("click", ".deleteGlobalAd",
+            function (e) {
+                e.preventDefault();
+                $(this).closest("div.row").find("div.adminAdOptions").addClass("hidden");
+                $(this).closest("div.row").find("div.confirmDeleteAd").fadeIn();
+            });
+
+            $(document).on("click", ".canceladDelete", function (e) {
+                e.preventDefault();
+                $(this).closest("div.row").find("div.confirmDeleteAd").hide();
+                $(this).closest("div.row").find("div.adminAdOptions").removeClass("hidden");
+            });
+
+            $(document)
+                .on("click",
+                    ".confirmdeleteadButton",
+                    function (e) {
+                        e.preventDefault();
+                        var id = $(this).data('bind');
+                        $.ajax({
+                            url: '@Url.Action("DeleteAd","ad")',
+                            type: "DELETE",
+                            data: { 'id': id },
+                            cache: false,
+                            async: true,
+                            success: function (data) {
+                                $(".AdSearchResult").html("");
+                                alertify.success("Ad Deleted!");
+                            }
+                        });
+                    });
+
+
+            $(document).on("click", ".renewGlobalAd",
+                              function (e) {
+                                  e.preventDefault();
+                                  var id = $(this).data('bind');
+                                  $.ajax({
+                                      url: '@Url.Action("RenewAd", "ad")',
+                                      type: "PATCH",
+                                      data: { 'id': id },
+                                      cache: false,
+                                      async: true,
+                                      success: function (data) {
+                                          searchAd(id);
+                                          alertify.success("Ad Renewed!");
+                                      },
+                                      error: function (xhr, textStatus, errorThrown) {
+                                          alertify.error(errorThrown);
+                                      }
+
+                                  });
+                              });
+
+            $(document).on("click", ".unpauseGlobalAd",
+                  function (e) {
+                      e.preventDefault();
+                      var id = $(this).data('bind');
+                      $.ajax({
+                          url: '@Url.Action("UnpauseAd", "ad")',
+                          type: "PATCH",
+                          data: { 'id': id },
+                          cache: false,
+                          async: true,
+                          success: function (data) {
+                              searchAd(id);
+                              alertify.success("Ad Unpaused!");
+                          },
+                          error: function (xhr, textStatus, errorThrown) {
+                              alertify.error(errorThrown);
+                          }
+                      });
+                  });
+
+            $(document).on("click", ".pauseGlobalAd",
+                  function (e) {
+                      e.preventDefault();
+                      var id = $(this).data('bind');
+                      $.ajax({
+                          url: '@Url.Action("PauseAd", "ad")',
+                          type: "PATCH",
+                          data: { 'id': id },
+                          cache: false,
+                          async: true,
+                          success: function (data) {
+                              searchAd(id);
+                              alertify.success("Ad Paused!");
+                          },
+                          error: function (xhr, textStatus, errorThrown) {
+                              alertify.error(errorThrown);
+                          }
+
+                      });
+                  });
+
+
+            @*$(document).on("click", ".editGlobalAd",
+      function (e) {
+          e.preventDefault();
+          var id = $(this).data('bind');
+          $.ajax({
+              url: '@Url.Action("GetEditAdPartial", "ad")',
+              type: "PATCH",
+              data: { 'id': id },
+              cache: false,
+              async: true,
+              success: function (data) {
+                  $(".AdSearchResult").html(data);
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                  alertify.error(errorThrown);
+              }
+
+          });
+      });*@
+
+            @*$(document).on("click", ".cancelEditAd",
+      function (e) {
+          e.preventDefault();
+          var id = $(this).data('bind');
+          searchAd(id);
+      });
+*@
+            $(document).on("click", ".makeAdFeatured",
+                 function (e) {
+                     e.preventDefault();
+                     var id = $(this).data('bind');
+                     $.ajax({
+                         url: '@Url.Action("MakeAdFeatured", "Admin")',
+                         type: "PATCH",
+                         data: { 'id': id },
+                         cache: false,
+                         async: true,
+                         success: function (data) {
+                             searchAd(id);
+                             alertify.success("Added Ad to Featured!");
+                         },
+                         error: function (xhr, textStatus, errorThrown) {
+                             alertify.error(errorThrown);
+                         }
+
+                     });
+                 });
+
+            $(document).on("click", ".removeAdFromFeatured",
+                          function (e) {
+                              e.preventDefault();
+                              var id = $(this).data('bind');
+                              $.ajax({
+                                  url: '@Url.Action("RemoveAdFromFeatured", "Admin")',
+                                  type: "PATCH",
+                                  data: { 'id': id },
+                                  cache: false,
+                                  async: true,
+                                  success: function (data) {
+                                      searchAd(id);
+                                      alertify.success("Removed Ad from Featured!");
+                                  },
+                                  error: function (xhr, textStatus, errorThrown) {
+                                      alertify.error(errorThrown);
+                                  }
+
+                              });
+                          });
+
+
+        });
+</script>

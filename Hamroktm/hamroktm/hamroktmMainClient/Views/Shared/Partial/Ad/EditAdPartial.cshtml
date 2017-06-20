@@ -1,0 +1,652 @@
+﻿@using System.Configuration
+@using System.Web.Script.Serialization
+@using Newtonsoft.Json
+@model contracts.Models.AdContract
+@{
+    //get category and subcategory
+    //var categoryList = new contracts.Models.CategoryContractList().CategoryList;
+    var productImagePath = ConfigurationManager.AppSettings["ProductImagePath"];
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+
+    //var serializer = new JavaScriptSerializer();
+    //var JsonData = serializer.Serialize(categoryList);
+    var Category = Model.Category;
+    var modeldata = Model;
+    List<SelectListItem> conditionList = new List<SelectListItem>()
+   {
+       new SelectListItem(){Text="Brand New", Value="Brand New"},
+       new SelectListItem(){Text="New(Used Couple Times)", Value="New(Used Couple Times)"},
+       new SelectListItem(){Text="Used", Value="Used"},
+       new SelectListItem(){Text="spareParts", Value="spareParts"}
+   };
+
+    foreach (var condition in conditionList)
+    {
+        if (condition.Value == Model.Condition)
+        {
+            condition.Selected = true;
+            break;
+        }
+    }
+
+}
+<link href="~/Content/bootstrap-tagsinput.css" rel="stylesheet" />
+<style>
+    @*this is for tags.... refactor as soon as you can.....*@.bootstrap-tagsinput {
+        width: 100%;
+    }
+
+    #uploadPreview1 img, #uploadPreview2 img, #uploadPreview3 img {
+        width: 50px;
+        height: auto;
+    }
+
+    input, textarea, select {
+        min-width: 100%;
+    }
+
+    .containers {
+        max-width: 550px;
+        padding: 15px;
+    }
+
+    .bar {
+        height: 18px;
+        background: green;
+    }
+
+    .thumbnail {
+        margin: auto;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+      /* Styles for validation helpers*/
+    .field-validation-error {
+        color: #ff0000;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .error {
+        color: #FF0000;
+    }
+</style>
+<div>
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index","Home")"> Home</a></li>
+        <li class="active"><b>Ad</b></li>
+        <li class="active"><b>Edit Ad</b></li>
+    </ol>
+</div>
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <span class="panelHeaderFont">Edit Ad</span>
+        @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm("EditAd", "Ad", FormMethod.Post, new { enctype = "multipart/form-data", id = "EditAdForm" }))
+        {
+
+            @Html.HiddenFor(model => model.AdId)
+            @Html.HiddenFor(model => model.CreatedBy)
+            @Html.HiddenFor(model => model.CreatedOn)
+            @Html.HiddenFor(model => model.Featured)
+            @Html.HiddenFor(model => model.EndOn)
+            @Html.HiddenFor(model => model.StartOn)
+            @Html.HiddenFor(model => model.Views)
+            @Html.HiddenFor(model => model.Status)
+
+
+
+
+            if (Model.Tags.Any())
+            {
+
+                for (int i = 0; i < Model.Tags.Count; i++)
+                {
+            @Html.HiddenFor(model => model.Tags[i])
+                }
+
+            }
+            <div class="form-horizontal">
+                <br />
+                @*<form class="form-horizontal style-form" id="PostAdForm" role="form">*@
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Title, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div>
+                            @Html.TextBoxFor(m => m.Title, new { @class = "form-control", required="required" })
+                        </div>
+
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Price, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                            @Html.TextBoxFor(m => m.Price, new { @class = "form-control",required="required" })
+                        </div>
+
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div>
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = "6",required="required" })
+                            <span id="descriptionError"></span>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Condition, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        <div>
+                            @Html.DropDownListFor(model => model.Condition, conditionList, "-- Select Condition --", new { name = "Condition", @class = "form-control",required="required" })
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Tags, new {@class = "col-md-2 control-label"})
+
+                    <div class="col-md-10">
+                        @*<div>
+
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <div> @tag</div>
+                                }
+
+                            </div>*@
+                        <input type="text" name="Tags" class="form-control testing"
+                               data-role="tagsinput" />
+                    </div>
+                </div>
+
+
+
+
+                <div class="form-group">
+                    @Html.Label("Header Image", new {@class = "col-md-2 control-label"})
+                    <div class="col-md-10 image1">
+                        @if (Model.Images.Any())
+                    {
+                        if (Model.Images[0] != null)
+                        {
+                            <input type="hidden" name="Images[0]" value="@Model.Images[0]" class="testingdata" />
+
+                            <div class="col-md-2 imagetoremove text-center ">
+
+                                <div class="row">
+
+                                    <img class="center thumbnail" style="max-width: 75px; max-height: 75px;" src="@Url.Content(productImagePath + "Large_" + Model.Images[0])" alt="Not Found" />
+                                    <button data-bind=0 class="imageremovalbutton btn btn-xs btn-danger">Remove</button>
+                                </div>
+                                <input type="file" accept="image/*" name="imagestoUpload[0]" id="choose1" class=" hidden form-control btn btn-default" />
+                            </div>
+                            <div id="newImage1" class="hidden">
+                                <input type="file" accept="image/*" name="imagestoUpload[0]" id="choose1" class="form-control btn btn-default" /><br/>
+                                <div id="uploadPreview1"></div>
+                            </div>
+                        }
+                        else
+                        {
+
+                            <input type="file" accept="image/*" name="imagestoUpload[0]" id="choose1" class="form-control btn btn-default" />
+                            <div id="uploadPreview1"></div>
+                        }
+                    }
+                    else
+                    {
+                            <input type="file" accept="image/*" name="imagestoUpload[0]" id="choose1" class="form-control btn btn-default" />
+                            <div id="uploadPreview1"></div>
+                    }
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Images, new {@class = "col-md-2 control-label"})
+                    <div class="col-md-10 image2">
+                        @if (Model.Images.Any())
+                    {
+                        if (Model.Images.Count > 1)
+                        {
+                            if (Model.Images[1] != null)
+                            {
+                            <input type="hidden" name="Images[1]" value="@Model.Images[1]" class="testingdata" />
+                            <div class="col-md-2 imagetoremove text-center ">
+
+                                <div class="row">
+
+                                    <img class="center thumbnail" style="max-width: 75px; max-height: 75px;" src="@Url.Content(productImagePath + "Large_" + Model.Images[1])" alt="Not Found" />
+                                    <button data-bind=1 class="imageremovalbutton btn btn-xs btn-danger">Remove</button>
+                                </div>
+                                <br/>
+                                <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="hidden form-control btn btn-default" />
+                            </div>
+                            <div id="newImage2" class="hidden">
+                                <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="form-control btn btn-default" /><br />
+                                <div id="uploadPreview2"></div>
+                            </div>
+
+                            }
+                            else
+                            {
+
+                            <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="form-control btn btn-default" />
+                            <div id="uploadPreview2"></div>
+
+                            }
+                        }
+                         else
+                            {
+                            <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="form-control btn btn-default" />
+                            <div id="uploadPreview2"></div>
+                            }
+
+                    }
+                    else
+                    {
+                            <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="form-control btn btn-default" />
+                            <div id="uploadPreview2"></div>
+                    }
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Images, new {@class = "col-md-2 control-label"})
+                    <div class="col-md-10 image3">
+                        @if (Model.Images.Any())
+                    {
+                        if (Model.Images.Count > 2)
+                        {
+                            if (Model.Images[2] != null)
+                            {
+                            <input type="hidden" name="Images[2]" value="@Model.Images[2]" class="testingdata" />
+
+                            <div class="col-md-2 imagetoremove text-center ">
+
+                                <div class="row">
+
+                                    <img class="center thumbnail" style="max-width: 75px; max-height: 75px;" src="@Url.Content(productImagePath + "Large_" + Model.Images[2])" alt="Not Found" />
+                                    <button data-bind=2 class="imageremovalbutton btn btn-xs btn-danger">Remove</button>
+                                </div>
+                                <br />
+                                <input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class=' hidden form-control btn btn-default' />
+                            </div>
+                            <div id="newImage3" class="hidden">
+                                <input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class='form-control btn btn-default' /><br />
+                                <div id='uploadPreview3'></div>
+                            </div>
+
+                            }
+                            else
+                            {
+
+                            <input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class='form-control btn btn-default' /><br />
+                            <div id='uploadPreview3'></div>
+
+
+                            }
+                        }
+                        else
+                        {
+
+                            <input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class='form-control btn btn-default' /><br />
+                            <div id='uploadPreview3'></div>
+
+
+                        }
+
+                    }
+                    else
+                    {
+
+                            <input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class='form-control btn btn-default' /><br />
+                            <div id='uploadPreview3'></div>
+
+
+                    }
+                    </div>
+                </div>
+
+
+
+
+
+                @*Work on Start Date and End Date... For Now default Expiry date is 30 days*@
+                @*/*StartOn*/
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.StartOn, new {@class = "col-md-3 control-label"})
+                        <div class="col-md-9">
+                            <div>
+                               @Html.TextBoxFor(m => m.StartOn, new {@class = " datepicker form-control"})
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Title, "", new {@class = "text-danger col-md-offset-3 col-md-9"})
+                    </div>
+
+                    /*EndOn*/
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Description, new {@class = "col-md-3 control-label"})
+                        <div class="col-md-9">
+                            <div>
+                                @Html.TextAreaFor(m => m.Description, new {@class = "form-control"})
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Title, "", new {@class = "text-danger col-md-offset-3 col-md-9"})
+                    </div>*@
+
+                @*<div id="imageuploaderKo" class="containers">*@
+                @*IMAGE 1*@
+                @*
+                    <div class="form-group">
+
+                        @Html.Label("Image 1", new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <input type="file" accept="image/*" name="imagestoUpload[0]" id="choose1" class="form-control btn btn-default" />
+                            <br />
+                            <div id="uploadPreview1"></div>
+                        </div>
+                *@
+
+                @*<div class="well" data-bind="filedrag: fileData">
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <img style="height: 100px;" class="img-rounded thumbnail" data-bind="attr:{src:fileData().dataURL}, visible:fileData().dataURL"/>
+                                <div data-bind="ifnot: fileData().dataURL">
+                                    <label> Drag File here</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="file" data-bind="fileInput: fileData, customFileInput:{buttonClass:'btn btn-success',fileNameClass: 'disabled form-control',onClear:onClear}" accept="image/*">
+                            </div>
+                        </div>
+                    </div>*@
+                @*@Html.LabelFor(m => m.Description, new {@class = "col-md-3 control-label"})
+                    <div class="col-md-9">
+                        <div>
+                            @Html.TextAreaFor(m => m.Description, new {@class = "form-control"})
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Title, "", new {@class = "text-danger col-md-offset-3 col-md-9"})*@
+                @*</div>
+                    </div>*@
+
+                @*IMAGE 2*@
+                @*<div class="form-group">
+
+                        @Html.Label("Image 2", new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <input type="file" accept="image/*" name="imagestoUpload[1]" id="choose2" class="form-control btn btn-default" />
+                            <br />
+                            <div id="uploadPreview2"></div>
+                        </div>
+                    </div>
+
+                         @*IMAGE 3*@
+                @*
+                    <div class="form-group">
+
+                        @Html.Label("Image 3", new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <input type="file" accept="image/*" name="imagestoUpload[2]" id="choose3" class="form-control btn btn-default" />
+                            <br />
+                            <div id="uploadPreview3"></div>
+                        </div>
+                    </div>*@
+
+
+                <div id="dropdownKo">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Category, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            <div>
+                                <select id="Category" name="Category" class="form-control" required="required"></select>
+
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Category, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                    </div>
+
+                    <div class="form-group" id="subCategoryPreview">
+                        @Html.LabelFor(m => m.SubCategory, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            <div id="subCategory">
+                                <select id="SubCategory" name="SubCategory" class="form-control" required="required"></select>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.SubCategory, "", new { @class = "text-danger col-md-offset-2 col-md-10" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class=" col-md-offset-2 col-md-10">
+                        <button type="submit" value="Update Ad" name="Submit" class="btn btn-success btn-sm" id="btnUpdate">Update</button>
+                        <button href="javascript:void(0)" class=" cancelEditAd btn btn-sm btn-danger">Cancel</button>
+                        @*@Html.ActionLink("Ad","PostAd",Model)*@
+                    </div>
+                </div>
+            </div>
+                            }
+        @*</form>*@
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap-datetimepicker.min.js")"></script>
+<script src="~/Scripts/bootstrap-tagsinput.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-datetimepicker.css" />
+<script src="~/Scripts/tinymce/tinymce.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/tinymce/jquery.tinymce.min.js"></script>
+<script>
+    $(document)
+        .ready(function () {
+            $("#EditAdForm").validate();
+            var tags = @Html.Raw(new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(Model.Tags));
+            tinymce.init({ selector: 'textarea' });
+            $("#EditAdForm")
+                    .on("submit",
+                        function (e) {
+                            var status = $("#EditAdForm").valid();
+                            if (status === true) {
+                                var content = tinyMCE.activeEditor.getContent();
+                                if (content === "") {
+                                    e.preventDefault();
+                                    $("#descriptionError")
+                                     .replaceWith("<span id='descriptionError' class='text-danger col-md-9 field-validation-error' data-valmsg-for='Description' data-valmsg-replace='true'>The Description field is required.</span>");
+                                    $(".mce-container").css("border-color", "red");
+                                } else {
+                                    $("#btnUpdate").attr('disabled', 'disabled');
+                                    $("#btnUpdate").html('<img class="loading-image" style="width:42px;height:18px;" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />');
+                                }
+                            }
+                        });
+
+            $.each(tags,
+               function(index, obj) {
+                   $("input.testing").tagsinput('add', obj);
+               });
+
+            var Category = @Html.Raw(new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(Model.Category));
+            var SubCategory=@Html.Raw(new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(Model.SubCategory));
+
+            //$(".removeImage")
+            //    .on("click",
+            //        function() {
+
+            //            //$(this).closest('div.removeImage').remove();
+            //            $(this).prev().val("abc");
+            //        });
+            var data;
+            $.ajax({
+                url: "@Url.Action("GetCategoriesJson", "Category")",
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                success: function (responseData) {
+                    data = responseData;
+
+                    var CategoryOption = "";
+                    $.each(responseData,
+                        function (i, item) {
+                            if (item.Category.Name !== " ") {
+                                if (item.Category.Name ==Category) {
+                                    CategoryOption += '<option value="' +item.Category.Name +'" selected>' +item.Category.Name +'</option>';
+                                } else {
+                                    CategoryOption += '<option value="' + item.Category.Name + '">' + item.Category.Name + '</option>';
+                                }
+                            }
+
+                        });
+                    $('#Category').append(CategoryOption);
+                    makeSubCategory();
+                }
+            });
+
+
+            $(".imageremovalbutton").on('click',
+                                   function (e) {
+                                       e.preventDefault();
+                                       var idNumber = $(this).data().bind;
+                                       if (idNumber === 0) {
+                                           //$(".image1")
+                                           //    .html("<input type='file' accept='image/*' name='imagestoUpload[0]' id='choose1' class='form-control btn btn-default' /><br /><div id='uploadPreview1'></div>");
+                                           $(this).closest("div.image1").find("input.testingdata").val(null);
+
+                                           $("#newImage1").removeClass("hidden");
+                                       }
+                                       else if (idNumber === 1) {
+                                           //$(".image2")
+                                           //    .html("<input type='file' accept='image/*' name='imagestoUpload[1]' id='choose2' class='form-control btn btn-default' /><br /><div id='uploadPreview2'></div>");
+                                           $(this).closest("div.image2").find("input.testingdata").val(null);
+
+                                           $("#newImage2").removeClass("hidden");
+                                       }
+                                       else  if (idNumber === 2) {
+                                           //$(".image3")
+                                           //    .html("<input type='file' accept='image/*' name='imagestoUpload[2]' id='choose3' class='form-control btn btn-default' /><br /><div id='uploadPreview3'></div>");
+                                           $(this).closest("div.image3").find("input.testingdata").val(null);
+
+                                           $("#newImage3").removeClass("hidden");
+                                       }
+                                       this.closest("div.imagetoremove").remove();
+
+                                   });
+
+            $(".image1")
+                .on("change","#choose1",function () {
+
+                    $("#uploadPreview1").empty();
+
+
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $("#uploadPreview1").append("<div><img class='preview-img' src='" + e.target.result + "'/>&nbsp;<span></span></div><br>");
+
+                        }
+
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+
+            $(".image2")
+                .on("change","#choose2",function () {
+
+                    $("#uploadPreview2").empty();
+
+
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $("#uploadPreview2").append("<div><img class='preview-img' src='" + e.target.result + "'/>&nbsp;<span></span></div><br>");
+
+                        }
+
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            $(".image3")
+                .on("change","#choose3",function () {
+                    $("#uploadPreview3").empty();
+
+
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $("#uploadPreview3").append("<div><img class='preview-img' src='" + e.target.result + "'/>&nbsp;<span></span></div><br>");
+
+                        }
+
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+
+            //Cascading Drop down button for Category and Sub Categories
+            $("#Category")
+                .change(function () {
+                    makeSubCategory();
+                });
+            function makeSubCategory() {
+                if (this.value != '') {
+                    var arr = data;
+                    var option = "<option value=''>-- Select Sub-Category --</option>";
+                    var currentCategory = $("#Category").val();
+                    $.each(data,
+                        function (k, v) {
+                            if (v.Category.Name === currentCategory) {
+                                $("#subCategoryPreview").removeClass('hidden');
+                                $.each(v.SubCategories,
+                                    function (k, v) {
+                                        if (v.Name != null) {
+                                            if (v.Name == SubCategory) {
+                                                option += '<option value="' + v.Name + '" selected>' + v.Name + '</option>';
+                                            } else {
+                                                option += '<option value="' + v.Name + '">' + v.Name + '</option>';
+                                            }
+
+                                        }
+                                    });
+                                $('#SubCategory').html(option);
+                                return false;
+                            } else {
+                                $("#subCategoryPreview").addClass('hidden');
+                            }
+                        });
+                }
+            }
+
+
+
+        });
+</script>

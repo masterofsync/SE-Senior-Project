@@ -1,0 +1,172 @@
+﻿<style>
+    #subCategory-panel td {
+        padding-top: 5px;
+    }
+
+    /* Styles for validation helpers*/
+    .field-validation-error {
+        color: #ff0000;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .error {
+        color: #FF0000;
+    }
+</style>
+<div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="panelHeaderFont">Create Category</span>
+            @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+        </div>
+        <div class="panel-body" id="panel-body">
+            <form class="form-horizontal style-form" id="categoryForms">
+
+                <div>
+                    <b>Category</b>
+                </div>
+                <input name="Category" id="Category" class="form-control required" required="required" />
+                <table id="subCategory-panel">
+                    <tbody>
+                        <br />
+                        <div>
+                            <b>Sub-Categories</b>
+                        </div>
+                        <tr class="subCategory-rows">
+                            <td>
+                                <input type="text" class="form-control subCategory" />
+                            </td>
+
+                            <td>
+                                <div class="input_fields_wrap">
+                                    &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-danger remove-field-subCategory"><span class="glyphicon glyphicon-remove"></span>&nbsp;Remove</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <br />
+                <div class="input_fields_wrap">
+                    <button class="btn btn-sm btn-primary" id="add-subCategory-field">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        &nbsp; Add Sub-Category
+                    </button>
+                </div>
+                <table style="display: none;">
+                    <tbody id="subCategory-hid">
+                        <tr class="subCategory-rows">
+
+                            <td>
+                                <input type="text" class="form-control subCategory " />
+                            </td>
+                            <td>
+                                <div class="input_fields_wrap">&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-danger remove-field-subCategory"><span class="glyphicon glyphicon-remove"></span>&nbsp;Remove</button></div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </form>
+        </div>
+        <div class="panel-footer">
+            <button id="SubmitCategoryForm" class="btn btn-sm btn-success" type="submit">Create</button>&nbsp;
+            <button class="btn btn-sm btn-danger buttonCancel" type="submit">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="br">
+    <br />
+</div>
+
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+
+    $(document)
+        .ready(function () {
+
+            alertify.set('notifier', 'position', 'top-right');
+            $("#categoryForms").validate();
+
+            $("#add-subCategory-field")
+                .on("click",
+                    function (e) {
+                        e.preventDefault();
+                        $('#subCategory-panel > tbody').append($("#subCategory-hid").html());
+                    });
+            $(document)
+                .on("click",
+                    ".remove-field-subCategory",
+                    function (e) {
+                        e.preventDefault();
+                        $(this).closest("tr.space").remove();
+                        $(this).closest("tr.subCategory-rows").remove();
+
+                    });
+            $("#SubmitCategoryForm")
+                .on("click",
+                    function (e) {
+                        if ($("#categoryForms").valid()) {
+                            e.preventDefault();
+                            var formFilled = true;
+                            var Category = {};
+                            Category.Name = $("#Category").val();
+                            var subCategory = $("#subCategory-panel").find("tr.subCategory-rows");
+                            var SubCategories = [];
+                            subCategory.each(function () {
+                                var subCategoryJson = $(this).find('input.subCategory').val();
+                                if (subCategoryJson == "" &&formFilled===true) {
+                                    alertify.error("Please fill all the empty fields");
+                                    formFilled = false;
+                                }
+                                SubCategories.push({ "Name": subCategoryJson });
+                            });
+
+                            if (formFilled === true) {
+
+                                //var jsonData = { "Category": Category, "SubCategories": SubCategories };
+                                var jsonData = JSON
+                                    .stringify({ 'categoryModel': Category, 'subCategoryModel': SubCategories });
+
+
+                                $.ajax({
+                                    url: '@Url.Action("PostCategory", "Category")',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: jsonData,
+                                    async: true,
+                                    success: function () {
+                                        $(".buttonCancel").click();
+                                        alertify.success("Category Saved!");
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+        });
+</script>

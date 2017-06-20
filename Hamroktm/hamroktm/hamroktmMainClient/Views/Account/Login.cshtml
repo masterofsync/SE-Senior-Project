@@ -1,0 +1,102 @@
+﻿@using hamroktmMainClient.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Log in";
+}
+
+<div class="container">
+
+    <div class="row">
+        <div id="loginbox" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+            <ol class="breadcrumb">
+                <b>
+                    <li class="active">@ViewBag.Title</li>
+                </b>
+            </ol>
+            <div class="panel panel-info">
+
+                <div class="panel-body">
+                    <section id="loginForm">
+                        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "loginForms" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <h4>Login.</h4>
+                            <hr />
+                            @Html.Partial("Partial/AlertModelStateErorrPartial")
+                            <br />
+                            <div class="form-group">
+
+                                <div class="col-md-offset-2 col-sm-offset-2 col-sm-8 col-md-8 col-xs-offset-2 col-xs-8 ">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                        @Html.TextBoxFor(m => m.UserName, new { placeholder = "User Name or Email", @class = "form-control" })
+
+                                    </div>
+                                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-sm-offset-2 col-sm-8 col-md-8 col-xs-offset-2 col-xs-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                        @Html.PasswordFor(m => m.Password, new { placeholder = "Password", @class = "form-control" })
+                                    </div>
+                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="text-center">
+                                    <div class="checkbox">
+                                        @Html.CheckBoxFor(m => m.RememberMe) Remember me? - @Html.ActionLink("Forgot password?", "ForgotPassword")
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="singlebutton"></label>
+                                <div class="col-md-4 center-block">
+                                    <button id="singlebutton" name="singlebutton" class="btn btn-primary center-block .btn-login">
+                                        Log In
+                                    </button>
+                                </div>
+
+                            </div>
+                        }
+                    </section>
+                    <hr />
+                    <div class="form-group">
+
+                        <div class="col-md-12 control text-center">
+                            Don't have an account?
+
+                            @Html.ActionLink("Register Here", "Register")
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-8">
+
+    </div>
+    @*<div class="col-md-4">
+            <section id="socialLoginForm">
+                @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+            </section>
+        </div>*@
+</div>
+<script>
+    $('#singlebutton')
+        .on("click",
+            function () {
+                $('#singlebutton').prop('disabled', true);
+                $('#singlebutton').html("Logging In....");
+                $('#loginForms').submit();
+            });
+</script>
+

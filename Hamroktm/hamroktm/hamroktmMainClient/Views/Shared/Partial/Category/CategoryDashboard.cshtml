@@ -1,0 +1,80 @@
+﻿@using contracts.Models
+@using Microsoft.AspNet.Identity
+@{
+    var mdl = Model;
+}
+<style>
+    #list3 ul {
+        list-style-image: url("../images/arrow.png");
+        color: #eee;
+        font-size: 18px;
+    }
+
+    ul, li {
+        list-style: none;
+        padding-left: 0;
+    }
+    .categoryOptions{display: none;}
+    a,a:hover,a:link,a:visited {
+       text-decoration: none;
+    }
+</style>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <span class="panelHeaderFont">DashBoard</span>
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <a data-toggle="collapse" href="#collapseCategories">
+
+                    <h4 class="panel-title">
+                        <span class="fa fa-id-card">
+                        </span>&nbsp;Categories
+
+                    </h4>
+                </a>
+        </div>
+            <div id="collapseCategories" class="panel-collapse collapse in">
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="javascript:void(0)" id="AllCategories"><span class="fa fa-id-card" aria-hidden="true"></span>&nbsp; All Categories</a></li>
+
+                    <li class="list-group-item"><a href="javascript:void(0)" id="PostCategory"><span class="glyphicon glyphicon-pencil text-primary"></span>&nbsp; Create Category</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <a data-toggle="collapse" href="#collapseAd">
+
+                    <h4 class="panel-title">
+                        <span class="fa fa-id-card">
+                        </span>&nbsp;Ad
+
+                    </h4>
+                </a>
+            </div>
+            <div id="collapseAd" class="panel-collapse collapse">
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="javascript:void(0)" id="SearchAdToEdit"><span class="fa fa-id-card" aria-hidden="true"></span>&nbsp; Search Ad</a></li>
+
+                    @*<li class="list-group-item"><a href="javascript:void(0)" id="PostCategory"><span class="glyphicon glyphicon-pencil text-primary"></span>&nbsp; Create Category</a></li>*@
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<script>
+    $(".Category").on("click", function () {
+        $(".categoryOptions").slideToggle();
+
+    });
+</script>

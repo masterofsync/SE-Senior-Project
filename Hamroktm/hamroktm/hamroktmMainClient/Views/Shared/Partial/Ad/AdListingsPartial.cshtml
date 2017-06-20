@@ -1,0 +1,98 @@
+﻿@using System.Configuration
+@using System.Text.RegularExpressions
+@model IEnumerable<contracts.Models.AdContract>
+@{
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+    var productImagePath = ConfigurationManager.AppSettings["ProductImagePath"];
+}
+<style>
+
+     .widthHeight {
+         max-height: 100px;
+         max-width: 100px;
+     }
+    .minwidthHeight {
+        min-height: 100px;
+        min-width: 100px;
+
+            display: flex;
+    align-items: center;
+    justify-content: center;
+
+    }
+    .Title {
+        font-weight: bolder;
+        font-size: 16px;
+        color: black;
+    }
+
+    .LastRow, .PriceRow {
+        font-weight: normal;
+        font-size: 11px;
+        color: lightgray;
+    }
+
+    .DescriptionRow {
+        font-weight: normal;
+        font-size: 13px;
+        color: gray;
+    }
+</style>
+@if (Model.Any())
+{
+    foreach (var Ad in Model)
+    {
+        Ad.Description = Regex.Replace(Ad.Description, @"<[^>]*>", string.Empty);
+        <div class="row">
+            <div class="col-md-12">
+                @if (Ad.Images.Any())
+                {
+                    <div class="col-md-2 ">
+                        <div class="thumbnail minwidthHeight">
+                            <a href="@Url.Action("Index", "Ad", new {Ad.AdId})" @*target="_blank"*@><img class="widthHeight" src="@Url.Content(productImagePath + "Small_" + Ad.Images[0])" alt="@Ad.Images[0]" /></a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-2">
+                        <a href="@Url.Action("Index", "Ad", new {Ad.AdId})" @*target="_blank"*@><img class="widthHeight thumbnail" src="@Url.Content(productImagePath + "defaultProductImage.jpg")" alt="DefaultImage" /></a>
+                    </div>
+                }
+                <div class="col-md-10">
+                    <div class="Title">
+                        <a href="@Url.Action("Index", "Ad", new {Ad.AdId})" @*target="_blank"*@>
+                            @Ad.Title.Substring(0, Math.Min(50, Ad.Title.Length))@if (Ad.Title.Length > 50)
+                            {<b>...</b>}
+                        </a>
+                        <span class="tags pull-right hidden-xs hidden-sm">
+                            <span class="price-tag"><a href="@Url.Action("Index", "Ad", new {Ad.AdId})" @*target="_blank"*@>@String.Format("{0:C}", Ad.Price)</a></span>
+                        </span>
+                    </div>
+                    <br />
+                    <div class="PriceRow">
+                        <span class="hidden-lg hidden-md"> Price: @Ad.Price&nbsp;&nbsp;</span> Expires On: @Ad.EndOn.ToShortDateString() &nbsp;&nbsp; By @Ad.CreatedBy
+
+                        </div>
+
+                        <br />
+                        <div class="DescriptionRow">
+                           @Html.Raw(Ad.Description).ToHtmlString().Substring(0, Math.Min(185, Html.Raw(Ad.Description).ToHtmlString().Length))@if (Html.Raw(Ad.Description).ToHtmlString().Length > 185)
+                            {<b>...</b>}
+                        </div>
+                        <br />
+                        <div class="LastRow">
+                            Views: @Ad.Views
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <hr />
+        }
+    }
+    else
+    {
+        <div>No Ads Found!</div>
+    }
+

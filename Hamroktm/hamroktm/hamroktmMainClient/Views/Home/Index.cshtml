@@ -1,0 +1,207 @@
+﻿@using System.Configuration
+
+@{
+    Layout = "~/Views/Shared/_HomePageLayout.cshtml";
+    ViewBag.Title = "Home Page";
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+}
+<style>
+    .input-disabled {
+        background-color: #EBEBE4;
+        border: 1px solid #ABADB3;
+        padding: 2px 1px;
+    }
+
+    .jumbotron {
+        background-color: white;
+    }
+
+    #RecentAds {
+        position: relative;
+    }
+
+    button#moreRecentAds, button#morePopularAds {
+        position: relative;
+        left: 45%;
+    }
+    .spaceonbottom {
+        padding-bottom: 20px;
+    }
+</style>
+<script type="text/javascript">  var appInsights = window.appInsights || function (config) { function i(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = "AuthenticatedUserContext", h = "start", c = "stop", l = "Track", a = l + "Event", v = l + "Page", y = u.createElement(o), r, f; y.src = config.url || "https://az416426.vo.msecnd.net/scripts/a/ai.0.js"; u.getElementsByTagName(o)[0].parentNode.appendChild(y); try { t.cookie = u.cookie } catch (p) { } for (t.queue = [], t.version = "1.0", r = ["Event", "Exception", "Metric", "PageView", "Trace", "Dependency"]; r.length;) i("track" + r.pop()); return i("set" + s), i("clear" + s), i(h + a), i(c + a), i(h + v), i(c + v), i("flush"), config.disableExceptionTracking || (r = "onerror", i("_" + r), f = e[r], e[r] = function (config, i, u, e, o) { var s = f && f(config, i, u, e, o); return s !== !0 && t["_" + r](config, i, u, e, o), s }), t }({ instrumentationKey: "e8af9187-86fb-468b-95eb-91e93fa082ce" }); window.appInsights = appInsights; appInsights.trackPageView();</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("Index", "Search", FormMethod.Get, new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6 col-sm-offset-1 col-sm-10 col-xs-12">
+                            <div class="input-group">
+                                <input style="max-width: 100%" type="text" name="q" class="form-control" placeholder="Search for...">
+                                <span class="input-group-btn">
+                                    <a href="#" onclick="$(this).closest('form').submit()" value="search" class="btn btn-default btn-beside"><span class="glyphicon glyphicon-search"></span></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <span class="panelHeaderFont">Featured Ads</span>
+                </div>
+                <div class="panel-body">
+                    <div id="featuredAds">
+                        <div class="Ads">
+                            <img class="loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="HomepageMessage"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 spaceonbottom">
+                    <ul class="tabs">
+                        <li id="RecentAdsTab" class="tab-link current" data-tab="RecentAds">Recent</li>
+                        <li id="PopularAdsTab" class="tab-link" data-tab="PopularAds">Popular</li>
+                    </ul>
+                    <div id="RecentAds" class=" Ads tab-content current">
+                        <img class=" loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                    </div>
+                    <div id="PopularAds" class=" Ads tab-content">
+                        <img class=" loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <span class="panelHeaderFont">Categories</span>
+                        </div>
+                        <div class="panel-body partialCategory">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+
+            //getting ads partial view and putting it in Recent ads tab
+            //getting recent ads
+            featuredadsCarousel();
+            recentadstabClick();
+            $("#RecentAdsTab")
+                .on("click",
+                    function () {
+                        recentadstabClick();
+                    });
+
+            //get popular ads
+            $("#PopularAdsTab").on("click", function () {
+                popularadstabClick();
+
+            });
+            showCategoriesTree();
+
+            function showCategoriesTree() {
+                $.ajax({
+                    url: '@Url.Action("CategoriesTreePartial", "Category")',
+                    type: 'GET',
+                    async: true,
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('.partialCategory').html(result);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            function featuredadsCarousel() {
+                $.ajax({
+                    url: '@Url.Action("GetFeaturedAds", "Ad")',
+                    type: 'GET',
+                    async: true,
+                    cache: false,
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('#featuredAds').html(result);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            function recentadstabClick() {
+                $.ajax({
+                    url: '@Url.Action("GetRecentAds", "Ad")',
+                    type: 'GET',
+                    async: true,
+                    cache: false,
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('#RecentAds').html("<hr/>" + result + "<a href='@Url.Action("AllRecentAds","Ad")'><button class='btn-sm btn-info' id='moreRecentAds'>View All...</button></a>");
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            function popularadstabClick() {
+                $.ajax({
+                    url: '@Url.Action("GetPopularAds", "Ad")',
+                    type: 'GET',
+                    async: true,
+                    cache: false,
+                    beforeSend: function( xhr ) {
+                        $('#PopularAds').html(" <img class='loading-image' src='@Url.Content(imagePath + "spin.svg")' alt='loading' />");
+                    },
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('#PopularAds').html("<hr/>" + result + "<a href='@Url.Action("AllPopularAds","Ad")'><button class='btn-sm btn-info' id='morePopularAds'>View All...</button></a>");
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            $('ul.tabs li')
+                .click(function () {
+                    var tab_id = $(this).attr('data-tab');
+                    $('ul.tabs li').removeClass('current');
+                    $('.tab-content').removeClass('current');
+                    $(this).addClass('current');
+                    $("#" + tab_id).addClass('current');
+                });
+        });
+</script>

@@ -1,0 +1,176 @@
+﻿@model contracts.Models.CategoryContract
+
+<style>
+    #subCategory-panel td {
+        padding-top: 5px;
+    }
+
+    .field-validation-error {
+        color: #ff0000;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .error {
+        color: #FF0000;
+    }
+</style>
+<div>
+
+    <div class="panel  panel-default">
+        <form class="form-horizontal style-form" id="categoryForms">
+            <div class="panel-heading">
+                <span class="panelHeaderFont">Edit Category</span>
+                @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+            </div>
+            <div class="panel-body">
+
+
+
+                <div>Category</div>
+                <input id="categoryId" type="hidden" name="CategoryId" value="@Model.Category.CategoryId" />
+                <input id="Category" value="@Model.Category.Name" class="form-control required" required="required" />
+                <table id="subCategory-panel">
+                    <tbody>
+                        <br />
+                        <div>Sub-Categories</div>
+                        @foreach (var sub in Model.SubCategories)
+                        {
+                            <tr class="subCategory-rows">
+                                <td>
+                                    <input type="hidden" id="subCategoryId" name="SubCategoryId" class="subCategoryId" value="@sub.SubCategoryId" />
+                                    <input type="text" class="form-control subCategory" value="@sub.Name" />
+                                </td>
+
+                                <td>
+                                    <div class="input_fields_wrap">
+                                        &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-danger remove-field-subCategory"><span class="glyphicon glyphicon-remove"></span>&nbsp;Remove</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <div class="input_fields_wrap">
+                    <button class="btn btn-sm btn-primary" id="add-subCategory-field">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        &nbsp;Add Sub-Category
+                    </button>
+                </div>
+                <br />
+
+
+            </div>
+            <div class="panel-footer">
+                <button id="SubmitEditCategoryForm" class="btn btn-sm btn-success" type="submit">Save</button>
+                <button class="btn btn-sm btn-danger buttonCancel" type="submit">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<table style="display: none;">
+    <tbody id="subCategory-hid">
+        <tr class="subCategory-rows">
+
+            <td>
+                <input type="text" class="form-control subCategory " />
+            </td>
+            <td>
+                <div class="input_fields_wrap">&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-danger remove-field-subCategory"><span class="glyphicon glyphicon-remove"></span>&nbsp;Remove</button></div>
+            </td>
+
+        </tr>
+    </tbody>
+
+</table>
+<div id="br">
+    <br />
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+
+    $(document)
+        .ready(function () {
+
+            $("#categoryForms").validate();
+
+            $("#add-subCategory-field")
+                .on("click",
+                    function (e) {
+                        e.preventDefault();
+                        $('#subCategory-panel > tbody').append($("#subCategory-hid").html());
+                    });
+            $(document)
+                .on("click",
+                    ".remove-field-subCategory",
+                    function (e) {
+                        e.preventDefault();
+                        $(this).closest("tr.space").remove();
+                        $(this).closest("tr.subCategory-rows").remove();
+                    });
+
+            $("#SubmitEditCategoryForm")
+                .on("click",
+                    function (e) {
+                        if ($("#categoryForms").valid()) {
+                            e.preventDefault();
+                            var formFilled = true;
+                            var Category = {};
+                            Category.Name = $("#Category").val();
+                            Category.CategoryId = $("#categoryId").val();
+                            var subCategory = $("#subCategory-panel").find("tr.subCategory-rows");
+
+                            var SubCategories = [];
+                            subCategory.each(function () {
+                                var subCategoryName = $(this).find('input.subCategory').val();
+                                var subCategoryId = $(this).find('input.subCategoryId').val();
+                                if (subCategoryName == "" && formFilled === true) {
+                                    alertify.error("Please fill all the empty fields");
+                                    formFilled = false;
+                                }
+                                SubCategories.push({ "Name": subCategoryName, "SubCategoryId": subCategoryId });
+                            });
+                            if (formFilled === true) {
+                                var jsonData = JSON.stringify({
+                                    'categoryModel': Category,
+                                    'subCategoryModel': SubCategories
+                                });
+
+                                $.ajax({
+                                    url: '@Url.Action("EditCategory", "Category")',
+                                    type: 'PUT',
+                                    contentType: 'application/json',
+                                    data: jsonData,
+                                    async: true,
+                                    success: function (data) {
+                                        alertify.success("Category Updated!");
+                                        $(".buttonCancel").click();
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+        });
+</script>

@@ -1,0 +1,196 @@
+﻿@using System.Configuration
+@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+@{
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+}
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HamroKtm - @ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+
+
+    <style>
+        .invisbleblock {
+            height: 30px;
+        }
+
+        .divimg {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+
+        body {
+            background-color: #EFEFEF;
+        }
+
+        .navbar {
+            max-height: 25px;
+        }
+
+        .navbar-inverse {
+            background-color: #006666;
+            border-top-width: 2px;
+            border-top-color: #003333;
+            border-bottom-color: #003333;
+            border-bottom-width: 2px;
+        }
+
+        .smalllogo .navbar-brand {
+            background: url(http://cdn.hamroktm.com/hamroktmcontainer/Images/hamroktmheadername.jpg) center/contain no-repeat;
+            width: 200px;
+            margin-left: 15px;
+        }
+
+        @@media (min-width: 768px) {
+            .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+                margin-left: 0px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="top-icons hidden-xs hidden-sm">
+                    <img id="facebook" src="@Url.Content("~/Images/Icons/FaceBookIcon.png")" alt="Facebook Icon" />&nbsp;<img src="@Url.Content("~/Images/Icons/TwitterIcon.png")" alt="Twitter Icon" />&nbsp;<img src="@Url.Content("~/Images/Icons/YouTubeIcon.png")" alt="Youtube Icon" />
+                </div>
+                <div class="top-icons hidden-md hidden-lg">
+                    <div class="invisbleblock"></div>
+                </div>
+            </div>
+
+            <div class="header-banner">
+                @*<a href="@Url.Action("Index", "Home")">*@<img id="headerImage" class="divimg img-responsive" src="@Url.Content(imagePath + "hamroktmheaderlogo.jpg")" />@*</a>*@
+            </div>
+        </div>
+        <div class="navbar navbar-inverse navbar-static-top customfixedHeader">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div id="smalllogo" class="hidden">
+                        <a class="navbar-brand text-hide" href="@Url.Action("Index", "Home")">
+                            Brand Name
+                        </a>
+                    </div>
+                    @Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", id = "texthome" })
+                </div>
+                @*<form class="navbar-form">
+                        <div class="form-group" style="display:inline;">
+                            <div class="input-group">
+                                <input type="text" class="form-control">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                            </div>
+                        </div>
+                    </form>*@
+                <div class="navbar-collapse customnavcolor collapse">
+                    @*<ul class="nav navbar-nav">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                        </ul>*@
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>
+    </header>
+    @* To make some space between header and body... since there is navbar  *@
+    <div class="whitespaceheaderbottom"></div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p class="text-center">&copy; @DateTime.Now.Year - Hamroktm</p>
+        </footer>
+    </div>
+
+    @Scripts.RenderFormat(@"<script src=""{0}"" async></script>", "~/bundles/modernizr")
+    <!-- include the style -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/alertifyjs/alertify.min.css")" />
+    <!-- include a theme -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/alertifyjs/themes/default.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/font-awesome.css")" />
+    @Scripts.RenderFormat(@"<script src=""{0}"" async></script>", "~/bundles/jquery")
+    @Scripts.RenderFormat(@"<script src=""{0}"" async></script>", "~/bundles/bootstrap")
+    @Scripts.RenderFormat(@"<script src=""{0}"" async></script>", "~/bundles/slick")
+    @Scripts.RenderFormat(@"<script src=""{0}"" async></script>", "~/bundles/hamroktm")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+<script async src="@Url.Content("/Scripts/alertify.min.js")"></script>
+<script>
+    $(document).ready(function () {
+
+
+        //$(".alert").alert();
+        $(".alert").slideDown(500);
+        $(".alert")
+            .fadeTo(8000, 500)
+            .slideUp(500,
+                function () {
+                    $(".alert").slideUp(500);
+                });
+
+        $.fn.extend({
+            animateCss: function(animationName) {
+                var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                this.addClass('animated ' + animationName)
+                    .one(animationEnd,
+                        function() {
+                            $(this).removeClass('animated ' + animationName);
+                        });
+            }
+        });
+
+       
+        $("#headerImage").on("click", function() {
+            $("#headerImage").animateCss('rubberBand');
+        });
+        //$('#facebook').on("click", function () {
+        //    alertify.set('notifier', 'position', 'top-right');
+        //    alertify.success('You are a noob!!!!!!');
+        //});
+
+        //activate only after entire page has loaded
+        $(window).bind("load", function () {
+            alertify.set('notifier', 'position', 'top-right');
+        });
+        
+        $(".logout").on("click",
+            function () {
+                javascript: document.getElementById('logoutForm').submit();
+                //alertify.set('notifier', 'position', 'top-right');
+                //alertify.success('Succefully Logged off!');
+            });
+
+        if ($(window).scrollTop() >= 200) {
+            $('.customfixedHeader').addClass('fixed-header');
+            $(".customfixedHeader").addClass("smalllogo");
+            $('#smalllogo').removeClass("hidden");
+            $("#texthome").addClass("hidden");
+        }
+        $(window).scroll(function () {
+            if ($(window).scrollTop() >= 200) {
+                $('.customfixedHeader').addClass('fixed-header');
+                $(".customfixedHeader").addClass("smalllogo");
+                $('#smalllogo').removeClass("hidden");
+                $("#texthome").addClass("hidden");
+            }
+            else {
+                $('.customfixedHeader').removeClass('fixed-header');
+                $(".customfixedHeader").removeClass("smalllogo");
+                $('#smalllogo').addClass("hidden");
+                $("#texthome").removeClass("hidden");
+            }
+        });
+    });
+</script>

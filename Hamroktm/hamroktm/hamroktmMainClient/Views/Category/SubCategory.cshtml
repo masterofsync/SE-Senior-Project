@@ -1,0 +1,56 @@
+﻿@model IEnumerable<contracts.Models.AdContract>
+@{
+    ViewBag.Title = "SubCategory";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <span class="panelHeaderFont">Categories</span>
+                        </div>
+                        <div class="panel-body partialCategory">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+
+            showCategoriesTree();
+
+            function showCategoriesTree() {
+                $.ajax({
+                    url: '@Url.Action("CategoriesTreePartial", "Admin")',
+                    type: 'GET',
+                    async: true,
+                    beforeSend: function () {
+                        $('.loading-image').removeClass('hidden');
+                    },
+                    success: function (result) {
+                        $('.loading-image').addClass('hidden');
+                        $('.partialCategory').html(result);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    },
+                    complete: function () {
+
+                    }
+                });
+            }
+
+
+        });
+</script>

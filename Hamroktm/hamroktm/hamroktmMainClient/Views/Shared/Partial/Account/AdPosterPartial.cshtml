@@ -1,0 +1,151 @@
+﻿@using System.Configuration
+@model contracts.Models.UserContract
+
+@{
+    var userImagePath = ConfigurationManager.AppSettings["UserImagePath"];
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+
+
+    var httpCookie = Context.Request.Cookies["ebsCookie"];
+    var userName = "";
+    if (httpCookie != null && httpCookie["Username"] != null)
+    {
+        var cookie = httpCookie["Username"];
+        if (cookie != null)
+        {
+            userName = cookie;
+        }
+
+    }
+}
+
+<style>
+    #showPhoneNumber:hover, #showEmail:hover, #UnFollowUserButton:hover {
+        cursor: pointer;
+    }
+
+    .adPosterImage {
+        max-height: 100px;
+        max-width: 100px;
+    }
+
+    .adPosterOutline {
+        display: inline-block;
+        max-height: 100px;
+        height: 100px;
+        width: 100px;
+        max-width: 100px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .adPosterOutlineFlex {
+        display: -webkit-flexbox;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-align: center;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+    }
+
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-12 text-center">
+            <div class="adPosterOutline thumbnail adPosterOutlineFlex">
+
+                @if (Model.Image != null)
+                {
+                    <img class=" adPosterImage center" src="@Url.Content(userImagePath + Model.Image + "?x=1")">
+                }
+                else
+                {
+                    <img class=" adPosterImage center" src="@Url.Content(imagePath + "defaultAvatar.jpg")">
+                }
+
+            </div>
+
+            <br /><b>@Model.FirstName&nbsp; @Model.LastName</b>
+            <br /><b>"@Model.UserName"</b>
+            <br />
+            <div style="font-size: 11px;"><b>Member Since: </b>@Model.CreatedOn.Value.ToShortDateString()</div>
+            <div style="font-size: 11px;"><b>Followers: </b>@Model.FollowersCount&nbsp;&nbsp; <b>Following: </b>@Model.Followingcount</div>
+            @if (userName != "" && userName.ToLower() != Model.UserName.ToLower())
+            {<div id="isFollowing"></div>}
+            <hr />
+
+        </div>
+
+        <div class="col-md-12">
+            @*update ads posted to get updated by js and show total number of ads by user*@
+            <b>Ads Posted: </b><span id="totalAdsByUser"></span><br />
+
+            <div id="showEmail"><a><b>Show Email</b></a></div>
+            <div id="Email" class="hidden"><b><a href="mailto:@Model.Email">@Model.Email</a> </b></div>
+            <a id="showPhoneNumber"><b>Show Phone Number</b></a>
+            <div id="phoneNumber" class="hidden">@Model.Phone</div><hr />
+        </div>
+
+        <div class="col-md-12">
+            @*update ads posted to get updated by js and show total number of ads by user*@
+            <a href="@Url.Action("UsersAdList", "Ad", new { userName = Model.UserName })"><b>View all Ads by this user</b></a>
+        </div>
+        @*Add More details later like total ads, what ads user posted, rating and all.*@
+
+    </div>
+</div>
+<script>
+    $(document)
+        .ready(function () {
+            //get total number of ads by user
+            totalAdsByUser();
+            function totalAdsByUser() {
+                $.ajax({
+                    url: '@Url.Action("GetAllAdByUserCount","Ad")',
+                    type: 'GET',
+                    data: { 'userName': '@Model.UserName' },
+                    success: function (response) {
+                        $("#totalAdsByUser").html(response);
+                    }
+                });
+            }
+
+            isFollowing();
+            function isFollowing() {
+                $.ajax({
+                    url: '@Url.Action("IsFollowing","Account")',
+                    type: 'GET',
+                    data: { 'userName': '@Model.UserName' },
+                    success: function (response) {
+                        //if already following show following tag and also Unfollow option so one can unfollow.
+                        if (response === true) {
+                            $("#isFollowing").html('<span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Following&nbsp;<span>(<a id="UnFollowUserButton">Unfollow</a>)</span>');
+                        }
+                        else {
+                            //if not following, show follow option so user can follow.
+                            $("#isFollowing").html('<br/><span class="btn btn-xs btn-info" id="FollowUserButton">Follow</span>');
+                        }
+                    }
+                });
+            }
+
+
+
+            $("#showEmail")
+                .on("click",
+                    function () {
+                        $("#showEmail").addClass("hidden");
+                        $("#Email").removeClass("hidden");
+                    });
+
+            $("#showPhoneNumber")
+                .on("click",
+                    function (e) {
+                        e.preventDefault();
+                        $("#showPhoneNumber").addClass("hidden");
+                        $("#phoneNumber").removeClass("hidden");
+                    });
+        });
+</script>

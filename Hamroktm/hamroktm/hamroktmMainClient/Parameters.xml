@@ -1,0 +1,8 @@
+﻿<parameters>
+  <parameter name="IIS Web Application Name" description="IIS Web Application Name" defaultvalue="__iisappname__">
+    <parameterentry kind="ProviderPath" scope="IiSApp" match="@defaultvalue"/>
+  </parameter>
+  <parameter name="DefaultLocalRoot" description="default local root" defaultvalue="__quarted__">
+    <parameterentry kind="XmlFile" scope="\\Web.config$" match="/configuration/appSettings/add[@key='DefaultLocalRoot']/@value"/>
+  </parameter>
+</parameters>

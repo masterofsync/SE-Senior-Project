@@ -1,0 +1,245 @@
+﻿@using System.Configuration
+@using System.Data
+@model contracts.Models.UserContract
+@{
+    var UserImagePath = ConfigurationManager.AppSettings["UserImagePath"];
+    var profileImage = UserImagePath + Model.Image + "?" + DateTime.Now.TimeOfDay.TotalSeconds;
+}
+
+<style>
+    .preview-img {
+        height: 100px;
+        width: 100px;
+    }
+    .nonInput,.nonInput:hover,.nonInput:focus {
+        border-style: none;
+
+
+    }
+
+    .profileImageThumb {
+               max-width: 75px;
+        width: 75px;
+        height: 65px;
+        max-height: 65px;
+                    display: flex;
+    align-items: center;
+    justify-content: center; 
+    }
+    .profileImage {
+        max-width: 70px;
+        max-height: 55px;
+    }
+
+    #OpenFollowersModal,#OpenFollowingModal {
+        color: lightskyblue;
+        font-weight: bolder;
+
+    }
+     #OpenFollowersModal:hover,#OpenFollowingModal:hover {
+         color: blue;
+         cursor: pointer;
+     }
+
+</style>
+
+<form class="form-horizontal style-form" id="ManageProfileForm" role="form">
+ 
+
+        <div id="ManageProfileResponse"></div>
+    <div class="form-group">
+        @Html.Label("Profile Picture", new {@class = "col-md-2 control-label"})
+        <div class="col-md-10">
+            <div class="row">
+                @if (Model.Image != null)
+                {
+                    <div class="col-md-2 text-center imageToRemove">
+
+                        <div class="profileImageThumb thumbnail">
+                            <img class="center profileImage" src="@profileImage" />
+                        </div>
+                               
+                        <span id="profileImageRemovalButton" class="btn btn-xs btn-danger ">Remove</span>
+                     
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-10">
+                        <input id="chooseImage" class="form-control" type="file" name="pic" accept="image/*">
+                    </div>
+
+                    //<img class="thumbnail" style="height: 100px; width: 100px;" src="@Url.Content(imagePath + "defaultAvatar.jpg")"/>
+                }
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div id="uploadImagePreview"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <hr/>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+
+
+    @*<div class="col-md-1 pull-right">
+        <button type="button"  class="btn btn-sm btn-info gylphicon glyphicon-edit" title="Edit Profile"></button>
+        <span class="gylphicon gylphicon-edit"></span>
+    </div>*@
+    <div class="form-group">
+
+        @Html.Label("User Name", new { @class = "col-md-2 control-label" })
+        <div class="col-md-5">
+            <span class="form-control nonInput" >@Model.UserName</span>
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.Label("Created On", new {@class = "col-md-2 control-label"})
+
+        <div class="col-md-5">
+            <span class="form-control nonInput" >@Model.CreatedOn.Value.ToShortDateString()</span>
+        </div>
+
+    </div>
+    <div class="form-group">
+
+        @Html.Label("Followers", new {@class = "col-md-2 control-label"})
+
+        <div class="col-md-5">
+            @if (Model.FollowersCount == 0)
+            {
+                <span class="form-control nonInput" value="" >@Model.FollowersCount</span>
+            }
+            else
+            {
+                <span id="OpenFollowersModal" class="form-control nonInput" value="">@Model.FollowersCount</span>
+            }
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        @Html.Label("Following", new { @class = "col-md-2 control-label" })
+
+        <div class="col-md-5">
+            @if (@Model.Followingcount == 0)
+            {
+                <span class="form-control nonInput" value="">@Model.Followingcount</span>
+            }
+            else
+            {
+                <span id="OpenFollowingModal" class="form-control nonInput" value="">@Model.Followingcount</span>
+            }
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        @Html.Label("Email", new {@class = "col-md-2 control-label"})
+        <div class="col-md-5">
+            <span class="form-control nonInput" value="">@Model.Email</span>
+        </div>
+    </div>
+    @if (Model.Role.Any())
+    {
+        <div class="form-group">
+
+            @Html.Label("Role", new { @class = "col-md-2 control-label" })
+            <div class="col-md-5">
+                <span class="form-control nonInput" value="">@Model.Role[0]</span>
+            </div>
+        </div>
+    }
+
+
+  
+
+    <div class="form-group">
+
+
+        <div class=" col-md-offset-2 col-md-10">
+            <div class="row">
+                <div class="col-md-12">
+                    <hr />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <button type="button" id="profile-edit-btn" data-toggle="popover" data-trigger="hover" data-content="Edit Profile" data-placement="top" class="editAd btn btn-info btn-xs pull-right">
+        <span class="glyphicon glyphicon-edit"></span>
+    </button>
+    <fieldset id="ManageProfileFieldset" disabled>
+       
+        <div class="form-group">
+
+            @Html.LabelFor(m => m.FirstName, new {@class = "col-md-2 control-label"})
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control", Value = @Model.FirstName, id = "ManageFirstName"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName, new {@class = "col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.LastName, new {@class = "form-control", Value = @Model.LastName, id = "ManageLastName"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Phone, new {@class = "col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Phone, new {@class = "form-control", Value = @Model.Phone, id = "ManagePhone"})
+            </div>
+        </div>
+        @*<div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" id="ManageProfileButton" value="Update Profile" class="btn btn-default" />
+                    <input action="action" class="btn btn-default" type="button" value="Back" onclick="window.history.go(-1); return false;" />
+                </div>
+            </div>*@
+    </fieldset>
+</form>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+
+    
+
+
+        $("#chooseImage")
+           .change(function () {
+
+               $("#uploadImagePreview").empty();
+
+
+               if (this.files && this.files[0]) {
+                   var reader = new FileReader();
+                   reader.onload = function (e) {
+                       $("#uploadImagePreview").append("<br><div class='text-center pull-left'><div ><img class='preview-img' src='" + e.target.result + "'/>&nbsp;<span></span></div><br/><div ><button id='uploadProfilePictureImage' class='btn btn-xs btn-success' type='button'>Upload</button></div></div>");
+
+                   }
+
+                   reader.readAsDataURL(this.files[0]);
+               }
+
+           });
+
+  
+    });
+</script>

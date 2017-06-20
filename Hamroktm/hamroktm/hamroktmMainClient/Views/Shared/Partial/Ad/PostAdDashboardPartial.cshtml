@@ -1,0 +1,41 @@
+﻿
+@using contracts.Models
+@using Microsoft.AspNet.Identity
+@{
+    var mdl = Model;
+}
+<style>
+    #list3 ul {
+        list-style-image: url("../images/arrow.png");
+        color: #eee;
+        font-size: 18px;
+    }
+</style>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <span class="panelHeaderFont">DashBoard</span>
+    </div>
+    <div class="panel-body">
+        @Html.AntiForgeryToken()
+        <div class="list-group" style="border: 0px;">
+            <a class="list-group-item" href="javascript:void(0)"><i class="fa fa-id-card" aria-hidden="true"></i>&nbsp; Post Ad</a>
+            <a class="list-group-item" href="@Url.Action("Manage","Ad")" ><i class="fa fa-id-card" aria-hidden="true"></i>&nbsp; My Ads</a>
+            @*<a class="list-group-item" href="javascript:void(0)" id="MyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp; My Profile</a>*@
+            @*<a class="list-group-item" href="@Url.Action("ManageProfile", "Manage")"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp; Edit Profile</a>*@
+            @*<a class="list-group-item" href="@Url.Action("ChangePassword", "Manage")"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i>&nbsp; Change Password </a>*@
+            @* <a class="list-group-item" href="javascript:void(0)" id="ChangePasswordButton"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i>&nbsp; Change Password </a>*@
+            @*@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a class="logout list-group-item" href="javascript:void(0)"><i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp; Log off</a>
+                }*@
+        </div>
+
+
+
+    </div>
+</div>
+<script>
+
+</script>

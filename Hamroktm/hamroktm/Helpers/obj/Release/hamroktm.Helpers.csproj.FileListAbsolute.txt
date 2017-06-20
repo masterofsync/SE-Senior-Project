@@ -1,0 +1,5 @@
+C:\oitproject\Hamroktm\hamroktm\Helpers\bin\Release\Helpers.dll
+C:\oitproject\Hamroktm\hamroktm\Helpers\bin\Release\Helpers.pdb
+C:\oitproject\Hamroktm\hamroktm\Helpers\obj\Release\Helpers.dll
+C:\oitproject\Hamroktm\hamroktm\Helpers\obj\Release\Helpers.pdb
+C:\oitproject\Hamroktm\hamroktm\Helpers\obj\Release\hamroktm.Helpers.csprojResolveAssemblyReference.cache

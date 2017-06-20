@@ -1,0 +1,88 @@
+﻿@using System.Configuration
+@model IEnumerable<contracts.Models.CategoryContract>
+
+<style>
+    /*li.tohide ul {
+        display: none;
+    }*/
+
+    li {
+        cursor: pointer;
+        cursor: hand;
+    }
+
+   .custom-bullet li {
+    display: block;
+}
+
+    .bullet li {
+    display: block;
+}
+
+         .bullet li:before
+{
+    /*Using a Bootstrap glyphicon as the bullet point*/
+    content:"\e080";
+    font-family: 'Glyphicons Halflings';
+    font-size: 9px;
+    float: left;
+    margin-top: 4px;
+    margin-left: -17px;
+    color: #31708f;
+}
+      .custom-bullet li:before
+{
+    /*Using a Bootstrap glyphicon as the bullet point*/
+    content:"\e092";
+    font-family: 'Glyphicons Halflings';
+    font-size: 9px;
+    float: left;
+    margin-top: 4px;
+    margin-left: -17px;
+    color: #31708f;
+}
+
+
+
+</style>
+
+@if (Model != null)
+{
+    <ul class="bullet">
+        @foreach (var category in Model)
+        {
+            <li class="tohide">
+                @Html.Hidden("CategoryId", category.Category.CategoryId)
+                <div class="showCategory"><b>@category.Category.Name</b></div>
+                <ul class="custom-bullet">
+                    @foreach (var subCategory in category.SubCategories)
+                    {
+                        @Html.Hidden("SubCategoryId", @subCategory.SubCategoryId)
+                        @Html.Hidden("SubCategoryName", @subCategory.Name)
+
+                    <a href="@Url.Action("index", "Category", new { category=category.Category.Name,subCategory=subCategory.Name })"><li>@subCategory.Name</li></a>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+
+}
+else
+{
+    <div>No Category Found!</div>
+}
+
+<script>
+    $(document)
+        .ready(function () {
+
+
+            $('div.showCategory').click(function () {
+                //$('div.showCategory').not(this).find('ul').hide();
+                var show = $(this).parent('li.tohide');
+
+                show.find('ul').toggle("slide");
+            });
+        });
+</script>

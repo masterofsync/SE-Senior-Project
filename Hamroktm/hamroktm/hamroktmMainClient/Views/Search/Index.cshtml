@@ -1,0 +1,169 @@
+﻿@using System.Configuration
+@using System.Web.Script.Serialization
+@model hamroktmMainClient.ViewModels.SearchViewModel
+@{
+    ViewBag.Title = "Search";
+
+    var searchString = ViewData["searchString"];
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+    var productImagePath = ConfigurationManager.AppSettings["ProductImagePath"];
+
+}
+
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("Index", "Search", FormMethod.Get, new {enctype = "multipart/form-data"}))
+                {
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6 col-sm-offset-1 col-sm-10 col-xs-12">
+                                <div class="input-group">
+                                    @if (Model.searchString != null)
+                                    {
+                                        <input style="max-width: 100%" type="text" name="q" class="form-control" value="@Model.searchString" placeholder="Search for...">
+                                    }
+                                    else
+                                    {
+                                        <input style="max-width: 100%" type="text" name="q" class="form-control" placeholder="Search for...">
+                                    }
+                                    <span class="input-group-btn">
+                                        <a href="#" onclick="$(this).closest('form').submit()" value="search" class="btn btn-default btn-beside"><span class="glyphicon glyphicon-search"></span></a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                @if (searchString != null)
+                {
+                    <ol class="breadcrumb">
+                        <li><b>Search Results for:</b> <span style="font-weight: lighter">@searchString</span></li>
+                    </ol>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @if (Model.adContract == null || Model.adContract.Count == 0)
+                {
+                    <div>No Ads Found!</div>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                @if (Model.adContract.Count != 0)
+                {
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div id="SearchResults">
+                                <img class="loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Pagination" class="text-center">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document)
+        .ready(function() {
+            if(@Model.adContract.Count>0){
+                var totalAds = @Model.adContract.Count;
+                var modelData =  @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.adContract));@*@Html.Raw(Json.Encode(Model.adContract));*@
+                var totalPage = totalAds / 5 + ((totalAds % 5) > 0 ? 1 : 0);
+                var currentPage = 1;
+                var adPerPage = 5;
+                var test = totalPage;
+                updateResult(currentPage);
+            }
+            function updateResult(currentPg) {
+                //calculate result for current page ... skip to the page.. take adPerPage after that
+                var currentContent = modelData.slice(adPerPage * (currentPg - 1), adPerPage * (currentPg - 1) + adPerPage);
+                var testContent = JSON.stringify(currentContent);
+                //get current page data
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'html',
+                    url:"@Url.Action("GetPageResult", "Search")",
+                    type:'POST',
+                    data : testContent,
+                    success: function(data) {
+                        //update current page data in searchresults
+                        $('#SearchResults').html(data);
+                    },
+                    error: function(err) {
+                        $('SearchResults').html("Error!");
+                    }
+
+                });
+
+                //update the pagination buttons.
+                updatePagination(currentPg);
+            }
+
+            function updatePagination(currentPg) {
+
+                var previous1 = currentPg - 1;
+                var previous2 = currentPg - 2;
+                var next1 = +currentPg + 1;
+                var next2 = +currentPg + 2;
+                var left = 1;
+                var right = totalPage;
+                var li1 = [];
+
+                if (currentPg > 0) {
+
+                    if ((previous2) > 0) {
+                        left = currentPg - 2;
+                    } else if (previous1 > 0) {
+                        left = currentPg - 1;
+                    }
+
+
+                    if ((next2) <= totalPage) {
+                        right = +currentPg + 2;
+
+                    } else if (next1 <= totalPage) {
+                        right = +currentPg + 1;
+                    }
+
+                }
+
+                if (previous1 > 0) {
+                    li1.push("<li class='paginButton' data-option='" + previous1 + "'><a href='#'>Previous</a></li>");
+                }
+                for (var i = left; i <= right; i++) {
+                    if (currentPg == i) {
+                        li1.push("<li class='active' data-option='" + i + "'><a href='#'>" + i + "</a></li>");
+                    } else {
+                        li1.push("<li class='paginButton' data-option='" + i + "'><a href='#'>" + i + "</a></li>");
+                    }
+                }
+                if (next1 <= totalPage) {
+                    li1.push("<li class='paginButton' data-option='" + next1 + "'><a href='#'>Next</a></li>");
+                }
+                $('#Pagination').html("<ul class='pagination'>"+li1.join('')+"</ul>");
+            }
+
+            $("#Pagination")
+                .on("click",".paginButton",
+                    function(e) {
+                        e.preventDefault();
+                        updateResult(this.dataset.option);
+                        updatePagination(this.dataset.option);
+                    });
+        });
+</script>

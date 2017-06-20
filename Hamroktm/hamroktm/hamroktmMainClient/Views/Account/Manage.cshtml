@@ -1,0 +1,564 @@
+﻿@using System.Configuration
+
+@{
+    ViewBag.Title = "Manage";
+    Layout = "~/Views/Shared/_HomePageLayout.cshtml";
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+
+    var httpCookie = Context.Request.Cookies["ebsCookie"];
+    var userName = "";
+    if (httpCookie != null && httpCookie["Username"] != null)
+    {
+        var cookie = httpCookie["Username"];
+        if (cookie != null)
+        {
+            userName = cookie;
+        }
+    }
+}
+
+@*<style>
+        .rotate {
+            -moz-transition: all .5s;
+            -webkit-transition: all .5s;
+            transition: all .5s;
+        }
+
+            .rotate.down {
+                -moz-transform: rotate(45deg);
+                -webkit-transform: rotate(45deg);
+                transform: rotate(45deg);
+            }
+    </style>*@
+
+@*@if (Request.IsAuthenticated)
+    {*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="Message"></div>
+
+                        </div>
+                    </div>
+                    <div>
+                        <ol class="breadcrumb">
+                            <li><a href="@Url.Action("Index","Home")"> Home</a></li>
+                            <li class="active"><b>Manage</b></li>
+                        </ol>
+                    </div>
+                    <div id="ProfilePanel">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <span class="panelHeaderFont">Profile</span>
+                                @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+                            </div>
+
+                            <div class="panel-body ProfilePanel-body">
+
+                                <img class="hidden loading-image" src="@Url.Content(imagePath + "spin.svg")" />
+                            </div>
+                            <div class="panel-footer">
+                                <div class="col-md-offset-2">
+                                    <fieldset id="ProfileFooterFieldset">
+                                        @*<button type="button" class="btn btn-info" id="profile-edit-btn">
+                                                Edit
+                                            </button>*@
+                                        <button type="button" class="btn btn-danger hidden" id="profile-cancel-btn">Cancel</button>
+                                        <div class="buttonDivider"></div>
+                                        <button type="button" class="btn btn-success hidden" id="profile-save-btn">Save</button>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ChangePasswordPanel" class="hidden">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <span class="panelHeaderFont">Change Password</span>
+                                @*<span class="pull-right clickableClose" data-effect="fadeOut"><i class="fa fa-times"></i></span>*@
+                            </div>
+                            <div class="panel-body ChangePasswordPanel-body">
+                                <img class="hidden loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                            </div>
+                            <div class="panel-footer">
+                                <div class="col-md-offset-3">
+                                    <fieldset id="ChangePasswordFooterFieldset">
+                                        <button type="button" class="btn btn-danger" id="changepassword-cancel-btn">Cancel</button>
+                                        <div class="buttonDivider"></div>
+                                        <button type="button" class="btn btn-success" id="changepassword-change-btn">Change</button>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @*@if (Request.IsAuthenticated){*@
+
+
+
+                            @*  }*@
+
+
+                            @{
+                                Html.RenderPartial("Partial/PanelDashboardPartial");
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="FollowModal" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                   
+                        <div class="modal-body">
+                            <img class="hidden" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />
+                           
+                        </div>
+                    
+
+                    <div class="modal-footer">
+                       
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+@*}*@
+
+<script>
+
+    $(document)
+        .ready(function () {
+            $(".rotate")
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).toggleClass("down");
+
+                });
+
+
+
+            fillProfilePanel();
+
+            $(document)
+                .on("click",
+                    "#OpenFollowingModal",
+                    function () {
+                        generateFollowingModal();
+                    });
+
+            function generateFollowingModal() {
+                $(".modal-title").html("Following");
+                $(".modal-body").html('<img class="loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />');
+                //get the following
+                $.ajax({
+                    url: '@Url.Action("GetFollowing", "Account")',
+                    type: 'GET',
+                    data: { 'userName': '@userName' },
+                    success: function (result) {
+                        $('.modal-body').html(result);
+                    }
+                });
+                //put it in "modal-body" html
+                $("#FollowModal").modal();
+            }
+
+            $(document)
+                .on("click",
+                    ".followButton",
+                    function () {
+                        var userName = $(this).data('bind');
+                        $.ajax({
+                            url: '@Url.Action("Follow", "Account")',
+                            type: 'GET',
+                            data: { 'userName': userName },
+                            success: function (result) {
+                                generateFollowersModal();
+                                fillProfilePanel();
+                                alertify.success("Following " + userName + "!");
+                            }
+                        });
+                    });
+
+            $(document)
+                .on("click",
+                    "#OpenFollowersModal",
+                    function () {
+                        generateFollowersModal();
+                    });
+
+            $(document)
+                .on("click",
+                    ".unFollowButtonInFollowersModal",
+                    function () {
+                        var userName = $(this).data('bind');
+                        $.ajax({
+                            url: '@Url.Action("UnFollow","Account")',
+                            type: 'DELETE',
+                            data: { 'userName': userName },
+                            success: function () {
+                                alertify.success("Unfollowed " + userName + "!");
+                                fillProfilePanel();
+                                generateFollowersModal();
+                            },
+                            error: function () {
+                                alertify.error("Could not process! Please refresh the page and try again!");
+                            }
+
+                        });
+                    });
+
+            function generateFollowersModal() {
+                $(".modal-title").html("Followers");
+                $(".modal-body").html('<img class="loading-image" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />');
+                //get the followers
+                $.ajax({
+                    url: '@Url.Action("GetFollowers", "Account")',
+                    type: 'GET',
+                    data: { 'userName': '@userName' },
+                    success: function (result) {
+                        $('.modal-body').html(result);
+                    }
+                });
+                //put it in "modal-body" html
+                $("#FollowModal").modal();
+            }
+
+            $(document).on("click", ".unFollowButton",
+                   function (e) {
+                       e.preventDefault();
+                       var currentThis = $(this);
+                       var userName = $(this).data('bind');
+                       $.ajax({
+                           url: '@Url.Action("UnFollow","Account")',
+                           type: 'DELETE',
+                           data: { 'userName': userName },
+                           success: function () {
+                               currentThis.closest(".row").remove();
+                               alertify.success("Unfollowed " + userName + "!");
+                               fillProfilePanel();
+                           },
+                           error: function () {
+                               alertify.error("Could not process! Please refresh the page and try again!");
+                           }
+
+                       });
+                   });
+
+
+            $("#MyAds")
+                .on("click",
+                    function () {
+                        alertify.set('notifier', 'position', 'top-right');
+                        alertify.success('No Ads Found!');
+
+                    });
+            $("#MyProfile")
+                .on("click",
+                    function () {
+                        fillProfilePanel();
+                    });
+
+            function fillProfilePanel() {
+                $('#profile-cancel-btn').addClass('hidden');
+                $('#profile-save-btn').addClass('hidden');
+                $('#ProfilePanel').removeClass("hidden");
+                $('#ChangePasswordPanel').addClass('hidden');
+                $('.loading-image').removeClass('hidden');
+                //$('#profile-edit-btn').removeClass('hidden');
+                getProfileData();
+            }
+
+            function getProfileData() {
+                $.ajax({
+                    type: 'GET',
+                    async: true,
+                    url: '@Url.Action("ShowMyProfile", "Account")',
+                    success: function (result) {
+                        $('.ProfilePanel-body').html(result);
+                    },
+                    complete: function () {
+                        $('.loading-image').addClass('hidden');
+                    },
+                    error: function (result) {
+                        $('.ProfilePanel-body').html(result);
+                    }
+                });
+            }
+
+            $(document)
+                .on("click",
+                    "#profileImageRemovalButton",
+                    function () {
+                        $.ajax({
+                            type: 'DELETE',
+                            async: true,
+
+                            url: '@Url.Action("RemoveProfileImage", "Account")',
+                            success: function (result) {
+                                getProfileData();
+                                alertify.success("Profile Image Removed!");
+                            },
+                            complete: function () {
+
+                            },
+                            error: function (result) {
+                                alertify.error("Could not remove image! Try again later");
+                            }
+                        });
+                    });
+
+            $(document).on("click", "#uploadProfilePictureImage", function () {
+                var formdata = $("#chooseImage").get(0);
+                var files = formdata.files;
+
+                var fileData = new FormData();
+
+                fileData.append('userName', '@userName');
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append('asd', files[i]);
+                }
+                $.ajax({
+                    url: '@Url.Action("PostProfileImage", "Account")',
+                    type: 'POST',
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    async: true,
+                    beforeSend:function() {
+                        $("#uploadProfilePictureImage").attr('disabled', 'disabled');
+                        $("#uploadProfilePictureImage").html('<img class="loading-image" style="width:42px;height:18px;" src="@Url.Content(imagePath + "spin.svg")" alt="loading" />');
+                    },
+                    success: function (result) {
+
+                        getProfileData();
+                        alertify.success("Profile image updated!");
+                    },
+                    error: function (xhr, a, s) {
+                        alertify.error("Could not upload Image. Try again later!");
+                    }
+
+                });
+            });
+
+            $("#ChangePasswordButton")
+                .on("click",
+                    function () {
+                        $('#ProfilePanel').addClass("hidden");
+                        $('#ChangePasswordPanel').removeClass('hidden');
+                        $('.loading-image').removeClass('hidden');
+                        $('#profile-cancel-btn').addClass('hidden');
+                        $('#profile-save-btn').addClass('hidden');
+                        $.ajax({
+                            type: 'GET',
+                            async: true,
+                            url: '@Url.Action("GetChangePasswordPartial", "Account")',
+                            beforeSend: function () {
+
+                            },
+                            success: function (result) {
+                                $('.ChangePasswordPanel-body').html(result);
+                            },
+                            complete: function () {
+                                $('.loading-image').addClass('hidden');
+                            },
+                            error: function (result) {
+                                $('.ChangePasswordPanel-body').html(result);
+                            }
+                        });
+                    });
+
+            $(document).on("click", '#profile-edit-btn',
+                    function (e) {
+                        firstName = $('#ManageFirstName').val();
+                        lastName = $('#ManageLastName').val();
+                        phone = $('#ManagePhone').val();
+                        e.preventDefault();
+                        if ($('#ProfilePanel').hasClass("Editable-Profile")) {
+                            changeToRawState();
+
+                        }
+                        else {
+                            $('#ManageProfileFieldset').prop("disabled", false);
+                            //$('#profile-edit-btn').addClass('hidden');
+                            $('#profile-cancel-btn').removeClass('hidden');
+                            $('#profile-save-btn').removeClass('hidden');
+                            $('#ProfilePanel').addClass('Editable-Profile');
+                        }
+                    });
+
+            $('#profile-cancel-btn')
+                .on("click",
+                    function (e) {
+
+                        //$("#ManageProfileForm")[0].reset();
+                        e.preventDefault();
+                        changeToRawState();
+                        $('.rotate').toggleClass("down");
+                    });
+
+            function changeToRawState() {
+
+
+                $('#ManageProfileFieldset').prop("disabled", true);
+                //$('#profile-edit-btn').removeClass('hidden');
+                $('#profile-cancel-btn').addClass('hidden');
+                $('#profile-save-btn').addClass('hidden');
+                $('#ManageFirstName').val(firstName);
+                $('#ManageLastName').val(lastName);
+                $('#ManagePhone').val(phone);
+                $('#ProfilePanel').removeClass('Editable-Profile');
+            }
+            $('#changepassword-cancel-btn')
+                .on('click',
+                    function (e) {
+                        e.preventDefault();
+                        $('#ChangePasswordPanel').addClass('hidden');
+
+                    });
+
+            $('#changepassword-change-btn')
+                .on('click',
+                    function (e) {
+                        e.preventDefault();
+                        var changepasswordObj = {
+                            'ConfirmPassword': $('#ConfirmPassword').val(),
+                            'NewPassword': $('#NewPassword').val(),
+                            'OldPassword': $('#OldPassword').val()
+                        };
+
+                        //if ($('#ChangePasswordForm').validate()) {
+                        $.ajax({
+                            url: '@Url.Action("ChangePassword", "Account")',
+                            type: 'POST',
+                            data: changepasswordObj,
+                            async: true,
+                            beforeSend: function () {
+                                $('#ChangePasswordFooterFieldset').prop("disabled", true);
+                            },
+                            success: function (result) {
+                                //$('#Message')
+                                //    .html("<div style='display: none;' class='alert alert-success'><a class='close' data-dismiss='alert'>x</a>" + "Password has been updated" + "</div>");
+                                alertify.success("Password has been updated!");
+                                $('#ChangePasswordPanel').addClass('hidden');
+                                $("#ProfilePanel").removeClass("hidden");
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                var errorArray = errorThrown.split('<br>');
+                                //$("#ManageProfileSuccess").html("Failed!");
+                                errorArray.forEach(function (element) {
+                                    $('#ChangePasswordResponse')
+                                        .append("<div class='alert alert-danger'><a class='close' data-dismiss='alert'>x</a>" + element + "</div>");
+                                });
+
+                            },
+                            complete: function () {
+                                $('#ChangePasswordFooterFieldset').prop("disabled", false);
+                                $('.alert').slideDown();
+                                startRemoveAlertTimer();
+                            }
+
+                        });
+                        //}
+                    });
+
+            $(".clickableClose")
+                .on("click",
+                    function (e) {
+                        e.preventDefault();
+                        if ($('#ProfilePanel').hasClass("Editable-Profile")) {
+                            changeToRawState();
+                            $('.rotate').toggleClass("down");
+                        }
+                    });
+
+            $('#profile-save-btn')
+                .on("click",
+                    function (e) {
+                        e.preventDefault();
+                        var jsonObj = {
+                            FirstName: $('#ManageFirstName').val(),
+                            LastName: $('#ManageLastName').val(),
+                            Phone: $('#ManagePhone').val()
+                        }
+                        //if ($('#ManageProfileForm').validate()) {
+                        $.ajax({
+                            url: '@Url.Action("EditMyProfile", "Account")',
+                            contentType: "application/json; charset=utf-8",
+                            type: 'POST',
+                            data: JSON.stringify(jsonObj),
+                            async: true,
+                            beforeSend: function () {
+                                $('#ProfileFooterFieldset').prop("disabled", true);
+                            },
+                            success: function (result) {
+                                //$("#ManageProfileSuccess").html("Success!");
+                                //$('#ManageProfileResponse')
+                                //    .html("<div style='display: none;' class='alert alert-success'><a class='close' data-dismiss='alert'>x</a>" + "Profile has been updated" + "</div>");
+                                alertify.success("Profile has been updated!");
+                                //$('.alert').slideDown();
+                                firstName = $('#ManageFirstName').val();
+                                lastName = $('#ManageLastName').val();
+                                phone = $('#ManagePhone').val();
+                            },
+                            error: function (xhr, textStatus, errotThrown) {
+                                //$("#ManageProfileSuccess").html("Failed!");
+                                $('#ManageProfileResponse')
+                                    .html("<div class='alert alert-success'><a class='close' data-dismiss='alert'>x</a>" +
+                                        "Error: " +
+                                        result +
+                                        "</div>");
+
+                            },
+                            complete: function () {
+                                $('.alert').slideDown();
+                                startRemoveAlertTimer();
+                                $('#ProfileFooterFieldset').prop("disabled", false);
+                                $('#ManageProfileFieldset').prop("disabled", true);
+                                //$('#profile-edit-btn').removeClass('hidden');
+                                $('#profile-cancel-btn').addClass('hidden');
+                                $('#profile-save-btn').addClass('hidden');
+                                $('#ProfilePanel').removeClass('Editable-Profile');
+                                $('.rotate').toggleClass("down");
+                            }
+                        });
+
+
+                        //}
+                    });
+
+            function startRemoveAlertTimer() {
+                window.setTimeout(function () {
+                    //$(".custom-alert").alert('close'); <--- Do not use this
+
+                    $(".alert")
+                        .slideUp(500,
+                            function () {
+                                $(this).remove();
+                            });
+                },
+                    10000);
+            }
+
+        });
+</script>

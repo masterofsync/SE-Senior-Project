@@ -1,0 +1,142 @@
+﻿@using System.Configuration
+@using Microsoft.Ajax.Utilities
+@model IEnumerable<contracts.Models.AdContract>
+@{
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+    var count = 0;
+}
+<style>
+    .widthHeight {
+        max-height: 85px;
+        max-width: 85px;
+    }
+
+    .Title {
+        font-weight: bolder;
+        font-size: 16px;
+        color: black;
+    }
+
+    .LastRow, .PriceRow {
+        font-weight: normal;
+        font-size: 11px;
+        color: lightgray;
+    }
+
+    .DescriptionRow {
+        font-weight: normal;
+        font-size: 13px;
+        color: gray;
+    }
+    .confirmDelete {
+        display: none;
+    }
+</style>
+@if (Model != null)
+{
+    <table class="table table-striped table-responsive">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        @foreach (var ad in Model)
+        {
+
+            <tbody>
+                <tr>
+                    <td data-title="@ad.AdId">@ad.AdId</td>
+                    <td data-title="@ad.Title">
+                        <a href="@Url.Action("Index", "Ad", new { ad.AdId })" target="_blank">
+                            @ad.Title.Substring(0, Math.Min(30, ad.Title.Length))@if (ad.Title.Length > 30)
+                            {<b>...</b>}
+                        </a>
+                    </td>
+                    <td data-title="@ad.Status">
+                        @if (ad.Status == "Live")
+                        {<span style="color:lightgreen" class="color-green glyphicon glyphicon-ok-sign"></span>} @ad.Status
+                    </td>
+                    <td>
+                        <div class="confirmDelete">
+                            <b>Delete?</b>
+                            <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Delete Ad" class="confirmdeleteButton btn btn-success btn-xs">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                         
+                            <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Cancel" class="cancelDelete btn btn-danger btn-xs">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                           
+                        </div>
+                        <div class="adOptions">
+                            <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Delete Ad" class="deleteAd btn btn-danger btn-xs">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-content="Edit Ad" data-placement="top" class="editAd btn btn-info btn-xs">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </button>
+                            <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-content="Renew Ad" data-placement="top" class="renewAd btn btn-default btn-xs">
+                                <span class="glyphicon glyphicon-repeat"></span>
+                            </button>
+                            @if (ad.Status == "Paused")
+                            {
+                                <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-content="Unpause Ad" data-placement="top" class="unpauseAd btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" data-bind="@ad.AdId" data-toggle="popover" data-trigger="hover" data-content="Pause Ad" data-placement="top" class="pauseAd btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-pause"></span>
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        }
+    </table>
+
+
+}
+else
+{
+    <div>No Ads Found!</div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+    @*$(".deleteAd")
+       .on('click',
+           function (e) {
+               e.preventDefault();
+               var closesttbody = $(this).closest("tbody");
+               var adId = $(this).attr('id');
+               $.ajax({
+                   url: '@Url.Action("DeleteAd", "Ad")',
+                   type: 'POST',
+                   async: true,
+                   data: { id: adId },
+                   success: function () {
+
+                       alertify.success("Ad has been deleted!");
+
+                   },
+                   error: function (xhr, textStatus, errorThrown) {
+                       var errorArray = errorThrown.split('<br>');
+                       //$("#ManageProfileSuccess").html("Failed!");
+
+                       alertify.error("Cannot delete the ad!");
+                   },
+                   complete: function () {
+
+                   }
+
+               });
+           });*@
+</script>

@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Email Confirmation";
+    var confirmationEmail = ViewData["Email"];
+}
+
+<ol class="breadcrumb">
+    <li class="active"><a href="@Url.Action("Index","Home")">Home</a></li>
+    <li class="active">Confirm Email</li>
+
+</ol>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <hgroup class="title">
+                <h1>Confirm your Email!</h1>
+            </hgroup>
+            <p>
+                Please check your email to confirm your account. Didn't get any email? <a href="@Url.Action("SendConfirmationEmail", "Account", new {email = confirmationEmail})"><b>Click here</b></a> to send confirmation email!
+            </p>
+        </div>
+    </div>
+</div>

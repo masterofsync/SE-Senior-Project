@@ -1,0 +1,101 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3841F9FB-CD23-45F4-9C66-5ECE49269CB5}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hamroktmMainServer", "hamroktmMainServer\hamroktmMainServer.csproj", "{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hamroktmMainClient", "hamroktmMainClient\hamroktmMainClient.csproj", "{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "contracts", "contracts\contracts.csproj", "{0275A1C6-2C33-405D-A285-4EED24DA666A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hamroktm.Helpers", "Helpers\hamroktm.Helpers.csproj", "{B228D0D0-A5F4-449E-93D7-AA56951D33B9}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://oitproject.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = hamroktmMainServer\\hamroktmMainServer.csproj
+		SccProjectName1 = hamroktmMainServer
+		SccLocalPath1 = hamroktmMainServer
+		SccProjectUniqueName2 = hamroktmMainClient\\hamroktmMainClient.csproj
+		SccProjectName2 = hamroktmMainClient
+		SccLocalPath2 = hamroktmMainClient
+		SccProjectUniqueName3 = contracts\\contracts.csproj
+		SccProjectName3 = contracts
+		SccLocalPath3 = contracts
+		SccProjectUniqueName4 = Helpers\\hamroktm.Helpers.csproj
+		SccProjectName4 = Helpers
+		SccLocalPath4 = Helpers
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		hamroktmMainClientAzureProd|Any CPU = hamroktmMainClientAzureProd|Any CPU
+		hamroktmMainClientAzureTest|Any CPU = hamroktmMainClientAzureTest|Any CPU
+		hamroktmMainServerAzureProd|Any CPU = hamroktmMainServerAzureProd|Any CPU
+		hamroktmMainServerAzureTest|Any CPU = hamroktmMainServerAzureTest|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainClientAzureProd|Any CPU.ActiveCfg = hamroktmMainClientAzureProd|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainClientAzureProd|Any CPU.Build.0 = hamroktmMainClientAzureProd|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainClientAzureTest|Any CPU.ActiveCfg = hamroktmMainClientAzureTest|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainClientAzureTest|Any CPU.Build.0 = hamroktmMainClientAzureTest|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainServerAzureProd|Any CPU.ActiveCfg = hamroktmMainServerAzureProd|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainServerAzureProd|Any CPU.Build.0 = hamroktmMainServerAzureProd|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainServerAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.hamroktmMainServerAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9B5E3B-9B75-450E-BEEF-AD5BCF355CF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainClientAzureProd|Any CPU.ActiveCfg = hamroktmMainClientAzureProd|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainClientAzureProd|Any CPU.Build.0 = hamroktmMainClientAzureProd|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainClientAzureTest|Any CPU.ActiveCfg = hamroktmMainClientAzureTest|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainClientAzureTest|Any CPU.Build.0 = hamroktmMainClientAzureTest|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainServerAzureProd|Any CPU.ActiveCfg = hamroktmMainServerAzureProd|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainServerAzureProd|Any CPU.Build.0 = hamroktmMainServerAzureProd|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainServerAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.hamroktmMainServerAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C69FF00C-57A0-416A-B48E-370B9F2E0BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainClientAzureProd|Any CPU.ActiveCfg = hamroktmMainClientAzureProd|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainClientAzureProd|Any CPU.Build.0 = hamroktmMainClientAzureProd|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainClientAzureTest|Any CPU.ActiveCfg = hamroktmMainClientAzureTest|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainClientAzureTest|Any CPU.Build.0 = hamroktmMainClientAzureTest|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainServerAzureProd|Any CPU.ActiveCfg = hamroktmMainServerAzureProd|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainServerAzureProd|Any CPU.Build.0 = hamroktmMainServerAzureProd|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainServerAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.hamroktmMainServerAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275A1C6-2C33-405D-A285-4EED24DA666A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainClientAzureProd|Any CPU.ActiveCfg = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainClientAzureProd|Any CPU.Build.0 = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainClientAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainClientAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainServerAzureProd|Any CPU.ActiveCfg = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainServerAzureProd|Any CPU.Build.0 = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainServerAzureTest|Any CPU.ActiveCfg = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.hamroktmMainServerAzureTest|Any CPU.Build.0 = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B228D0D0-A5F4-449E-93D7-AA56951D33B9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

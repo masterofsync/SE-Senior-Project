@@ -1,0 +1,87 @@
+﻿<style>
+    textarea {
+       min-width: 100% !important;
+    }
+    .error {
+        color: #FF0000;
+    }
+</style>
+
+
+<div id="PostAd">
+    <form id="commentForm">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.TextArea("commentDescription", new {id = "commentArea", @class = "form-control", rows = "3", maxlength=500, required=""})
+                    <span id="remainingChar">500</span> characters remaining.
+                </div>
+
+                <div id="commentPostOptions" class="col-md-12 hidden btn-toolbar">
+                    <br/>
+                    <span id="cancelComment" class="btn btn-default btn-sm pull-right">Cancel</span>
+                    <span id="postComment" class="btn btn-success btn-sm pull-right">Submit</span>
+
+                </div>
+            
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document)
+        .ready(function () {
+            var maxLength = 500;
+            $("textarea#commentArea")
+                .keyup(function() {
+                    var length = $(this).val().length;
+                    length = maxLength - length;
+                    $('#remainingChar').text(length);
+                });
+
+            $(document)
+                .on('click',
+                    "#commentArea",
+                    function () {
+                        $("#commentPostOptions").removeClass("hidden");
+                    });
+
+            $("#cancelComment")
+                .on("click",
+                    function () {
+                        defaultCommentForm();
+                    });
+
+            function defaultCommentForm() {
+                $("#commentArea").val('');
+                $("#commentForm").validate().resetForm();
+                $('#remainingChar').text(maxLength);
+                $("#commentPostOptions").addClass("hidden");
+            }
+
+            @*$("#postComment")
+                .on("click",
+                    function () {
+                        var commentMessage = $("#commentArea").val();
+
+                        $.ajax({
+                            url: "@Url.Action("PostComment","Comment")",
+                            contentType: "application/json; charset=utf-8",
+                            type: 'POST',
+                            data: { 'comment': commentMessage },
+                            async: true,
+                            success: function (responseData) {
+                                defaultCommentForm();
+                                alertify.success("Comment Posted!");
+                            },
+                            error: function () {
+                                alertify.success("Comment could not be posted! Try Again later!");
+                            }
+
+                        });
+
+
+                    });*@
+        });
+</script>

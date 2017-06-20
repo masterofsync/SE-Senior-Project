@@ -1,0 +1,104 @@
+﻿@using System.Configuration
+@model IEnumerable<contracts.Models.FollowContract>
+
+@{
+    bool isfollowing = (string)ViewData["follow"] == "Following";
+    bool isfollower = (string)ViewData["follow"] == "Follower";
+
+    var userImagePath = ConfigurationManager.AppSettings["UserImagePath"];
+    var imagePath = ConfigurationManager.AppSettings["ImagePath"];
+    var count = 0;
+}
+
+<style>
+    .icon {
+        min-width: 30px;
+        min-height: 30px;
+        max-width: 30px;
+        max-height: 30px;
+    }
+
+    .userContact {
+        font-size: 14px;
+    }
+
+    .divider {
+        height: 1px;
+        margin: 9px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;
+    }
+</style>
+
+
+@if (Model.Any())
+{
+    foreach (var userData in Model)
+    {
+        <div class="row">
+            @if (count != 0)
+            {
+                <div class="divider"></div>
+            }
+            <div class="col-md-12 userContact">
+                <div class="col-md-1">
+                    @if (userData.UserData.Image != null)
+                    {
+                        <img class="icon img-thumbnail" src="@Url.Content(userImagePath + userData.UserData.Image)"/>
+                    }
+                    else
+                    {
+                        <img class="icon img-thumbnail" src="@Url.Content(imagePath + "defaultAvatar.jpg")" />
+                    }
+                </div>
+                <div class="col-md-6">
+                    <span>@userData.UserData.FirstName &nbsp; @userData.UserData.LastName (@userData.UserData.UserName)</span>
+                </div>
+                <div class="col-md-offset-1 col-md-4">
+                    @if (isfollowing)
+                    {
+                        <button type="button" data-bind="@userData.UserData.UserName" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Unfollow" class="unFollowButton btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-thumbs-down"></span>
+                        </button>
+                    }
+                    @if (isfollower)
+                    {
+                        if (userData.IsFollowing)
+                        {
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                            <span>&nbsp; Following &nbsp;</span>
+                            <button type="button" data-bind="@userData.UserData.UserName" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Unfollow" class="unFollowButtonInFollowersModal btn btn-danger btn-xs">
+                                <span class="glyphicon glyphicon-thumbs-down"></span>
+                            </button>
+                        }
+
+                        if (!userData.IsFollowing)
+                        {
+                            <button type="button" data-bind="@userData.UserData.UserName" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Follow" class="followButton btn btn-info btn-xs">
+                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                            </button>
+                        }
+
+                    }
+                </div>
+            </div>
+        </div>
+        count++;
+    }
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4>No Users!</h4>
+        </div>
+    </div>
+}
+
+<script>
+    $(document)
+        .ready(function () {
+            $('[data-toggle="popover"]').popover();
+
+        });
+</script>
